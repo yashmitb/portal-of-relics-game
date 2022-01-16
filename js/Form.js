@@ -3,16 +3,15 @@ class Form {
         this.input = createInput("").attribute("placeholder", "Enter your username");
         this.playButton = createButton("Play");
         this.aboutButton = createButton("About");
-        this.aboutButton = createButton("About");
         this.creditsButton = createButton("Credits");
         this.titleImg = createImg("./assets/title_db.png", "game title");
         this.greeting = createElement("h2");
     }
 
     setElementsPosition() {
-        this.titleImg.position(width / 2 - 720, height/2 -300);
+        this.titleImg.position(230, height/2 -300);
         this.input.position(width / 2 - 110, height / 2 - 80);
-        this.playButton.position(width / 2 - 90, height / 2 - 10);
+        this.playButton.position(width / 2-90, height / 2 - 10);
         this.aboutButton.position(width / 2 - 90, height / 2 + 60);
         this.creditsButton.position(width / 2 - 90, height / 2 + 130);
         this.greeting.position(width / 2 - 300, height / 2 - 100);
@@ -34,19 +33,31 @@ class Form {
         this.aboutButton.hide();
         this.creditsButton.hide();
         this.input.hide();
+        this.titleImg.hide();
     }
 
     handleMousePressed() {
         this.playButton.mousePressed(() => {
             print("worked");
+            this.hide();
+            this.titleImg.class("gameTitleAfterEffect");
+            createCanvas(windowWidth, windowHeight);
+            gameState = 'play';
         });
 
         this.aboutButton.mousePressed(()=>{
             swal({
+                icon: "info",
                 title: 'About',
                 text: 'Add text',
                 confirmButtonText: "Got it!"
             });
+        })
+        this.creditsButton.mousePressed(()=>{
+            swal({
+                title: "Credits",
+                text: "Game made by Yashmit Bhaverisetti (AKA Yoshi)" 
+            })
         })
     }
 

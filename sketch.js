@@ -6,6 +6,9 @@ let sand = "#eecda3";
 let grass = "#7ec850";
 let stone = "#676767";
 let snow = "#fffafa";
+let k = 0, t = 0, m = 0;
+
+var gameState = 'form';
 
 var form;
 
@@ -26,9 +29,17 @@ function setup() {
   form.display();
 }
 
-function draw(){
-  form.display();
-
+function draw() {
+  if (gameState === 'form') {
+    form.display();
+  }
+  if (gameState === 'play') {
+    // console.log("asd");
+    makeGrid();
+    createRooms();
+    drew();
+    gameState = "s";
+  }
 }
 
 function makeMap() {
@@ -103,5 +114,17 @@ function drawMap() {
     }
   }
   updatePixels();
+}
+
+function windowResized() {
+  resizeCanvas(windowWidth, windowHeight);
+
+  background(0);
+
+  noiseDetail(5, 0.5);
+
+  makeMap();
+
+  drawMap();
 }
 
