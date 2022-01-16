@@ -35,10 +35,7 @@ function draw() {
   }
   if (gameState === 'play') {
     // console.log("asd");
-    makeGrid();
-    createRooms();
-    drew();
-    gameState = "s";
+
   }
 }
 
@@ -128,3 +125,4 @@ function windowResized() {
   drawMap();
 }
 
+// -----------------------------------------------------------------------------------------------------------------------------------------
