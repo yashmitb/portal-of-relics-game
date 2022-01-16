@@ -12,6 +12,20 @@ var gameState = 'form';
 
 var form;
 
+var left_key = false;
+var up_key = false;
+var right_key = false;
+var down_key = false;
+
+var boxX = 40;
+var boxY = 350;
+var boxSpeedX = 0;
+var boxSpeedY = 0;
+
+var box;
+var bg;
+var bo1;
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
 
@@ -27,6 +41,12 @@ function setup() {
 
   form = new Form();
   form.display();
+  fill("gray");
+  box = createSprite(windowWidth/2,windowHeight/2,windowWidth/2- 1000,windowWidth/2- 1000);
+  bo1 = createSprite(300,300,300,300);
+  box.visible = false;
+  bg = loadImage('assets/bg.jpg');
+
 }
 
 function draw() {
@@ -35,7 +55,79 @@ function draw() {
   }
   if (gameState === 'play') {
     // console.log("asd");
+    
+    background(200);
+    movebox();
+    fill('red');
+    box.visible = true;
+    box.position.x = boxX;
+    box.position.y = boxY;
+    camera.position.x = box.position.x;
+    camera.position.y = boxY;
 
+  }
+
+
+  console.log(boxX);
+
+  drawSprites();
+}
+
+function movebox() {
+  boxX += boxSpeedX;
+  boxY += boxSpeedY;
+  boxSpeedX *= 0.95;
+  boxSpeedY *= 0.95;
+  if (left_key) {
+    boxSpeedX -= 0.3
+  }
+  if (right_key) {
+    boxSpeedX += 0.3
+  }
+  if (up_key) {
+    boxSpeedY -= 0.3
+  }
+  if (down_key) {
+    boxSpeedY += 0.3
+  }
+
+  //EDGES 
+  if (boxX > width || boxX < 0) {
+    // boxSpeedX *= -1
+  }
+  if (boxY > height || boxY < 0) {
+    // boxSpeedY *= -1
+  }
+  //TRACK CENTRE
+}
+
+function keyPressed() {
+  if (keyCode == LEFT_ARROW) {
+    left_key = true;
+  }
+  if (keyCode == UP_ARROW) {
+    up_key = true;
+  }
+  if (keyCode == RIGHT_ARROW) {
+    right_key = true;
+  }
+  if (keyCode == DOWN_ARROW) {
+    down_key = true;
+  }
+}
+
+function keyReleased() {
+  if (keyCode == LEFT_ARROW) {
+    left_key = false;
+  }
+  if (keyCode == UP_ARROW) {
+    up_key = false;
+  }
+  if (keyCode == RIGHT_ARROW) {
+    right_key = false;
+  }
+  if (keyCode == DOWN_ARROW) {
+    down_key = false;
   }
 }
 

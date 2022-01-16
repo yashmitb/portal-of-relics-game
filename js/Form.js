@@ -49,7 +49,7 @@ class Form {
             swal({
                 icon: "info",
                 title: 'About',
-                text: 'Add text',
+                text: 'Welcome to Portal Of Relics! Your objective is to collect all 3 relics from different dimentions which are unlocked by keys around the main island! Once you collect all the relcics, prepare for the bossfight by gearing up using the coins found around the map! Still do not understand? Do not fret, there will be a tutorial in game!',
                 confirmButtonText: "Got it!"
             });
         })
