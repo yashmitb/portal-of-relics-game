@@ -50,7 +50,7 @@ function setup() {
   form = new Form();
   form.display();
   fill("gray");
-  box = createSprite(windowWidth / 2, windowHeight / 2, windowWidth / 2 - 1000, windowWidth / 2 - 1000);
+  box = createSprite(windowWidth / 2, windowHeight / 2, 50, 50);
   box.depth = 10000000;
   
   box.visible = false;
