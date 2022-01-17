@@ -4,10 +4,16 @@ let ocean = "#008dc4";
 let shore = "#00a9cc";
 let sand = "#eecda3";
 let grass = "#7ec850";
-let darkGrass = "#6dad45";
 let stone = "#676767";
 let snow = "#fffafa";
 let k = 0, t = 0, m = 0;
+
+
+
+let tileGrass = "#7ec850";
+let tileDarkGrass = "#6dad45";
+let tileBrick = "#aa5544";
+
 
 var gameState = 'form';
 
@@ -28,7 +34,7 @@ var boxSpeedY = 0;
 var box;
 var bg;
 var bo1;
-var grassTileGroup;
+var grassTileGroup, brickTileGroup;
 var random123 = 0;
 
 var edge1, edge2, edge3, edge4;
@@ -47,12 +53,13 @@ function setup() {
   drawMap();
 
   grassTileGroup = new Group();
+  brickTileGroup = new Group();
   form = new Form();
   form.display();
   fill("gray");
-  box = createSprite(windowWidth / 2, windowHeight / 2, windowWidth / 2 - 1000, windowWidth / 2 - 1000);
+  box = createSprite(windowWidth / 2, windowHeight / 2, 50, 50);
   box.depth = 10000000;
-  
+
   box.visible = false;
   box.shapeColor = color(255, 0, 0);
   bg = loadImage('assets/bg.jpg');
@@ -75,51 +82,82 @@ function draw() {
     box.position.y = boxY;
     camera.position.x = box.position.x;
     camera.position.y = boxY;
-    
-    if(grassTileCreated === 0){
-    for(var u=0; u<40;u++){
-      for(var i=0;i<40;i++){
-        createGrassTile(windowWidth - i*100,random123);
+
+    if (grassTileCreated === 0) {
+      for (var u = 0; u < 40; u++) {
+        for (var i = 0; i < 40; i++) {
+          createTiles(windowWidth - i * 100, random123);
+        }
+        random123 = random123 + 100;
       }
-      random123 = random123+100;
+      grassTileCreated = 1;
+
+
     }
-    grassTileCreated = 1;
+
+    if (box.collide(brickTileGroup) === true) {
+      console.log("asd");
+      boxSpeedX = boxSpeedX * -1;
+      boxSpeedY = boxSpeedY * -1;
+      console.log(boxSpeedX);
+      console.log(boxSpeedY);
+    }
 
   }
 
+  // console.log(box.position);
 
-  }
-
-  console.log(box.position);
-  // console.log(boxY);
-  // console.log(-windowHeight * 2);
 
   drawSprites();
 }
 
-function createGrassTile(x,y){
-  bo1 = createSprite(x,y, 100, 100);
-  console.log(Math.random(0,1))
-  var randomNum = Math.round(random(0,1));
-  if(randomNum === 1){
-    bo1.shapeColor = color(darkGrass);
+function createTiles(x, y) {
+  bo1 = createSprite(x, y, 100, 100);
+  // console.log(Math.random(0, 5));
+  //grass most common 0,1,2
+  //darkgrass little less common 3,4
+  //brick least common 5
+  var randomNum = Math.round(random(0, 5));
+  if (randomNum === 0 || randomNum === 1 || randomNum === 2) {
+    bo1.shapeColor = color(tileGrass);
+    bo1.depth = 0;
+    grassTileGroup.add(bo1);
   }
-  if(randomNum === 0){
-    bo1.shapeColor = color(grass);
+  if (randomNum === 3) {
+    bo1.shapeColor = color(tileDarkGrass);
+    bo1.depth = 0;
+    grassTileGroup.add(bo1);
   }
-  bo1.depth = 0;
-  grassTileGroup.add(bo1);
+  else{
+    bo1.shapeColor = color(tileGrass);
+    bo1.depth = 0;
+    grassTileGroup.add(bo1);
+  }
+  if (randomNum === 5) {
+    var randomNum = Math.round(random(0, 10));
+    if(randomNum === 3){
+      bo1.shapeColor = color(tileBrick);
+      bo1.depth = 0;
+      brickTileGroup.add(bo1);
+    }
+    else{
+      bo1.shapeColor = color(tileGrass);
+      bo1.depth = 0;
+      grassTileGroup.add(bo1);
+    }
+  }
+
 }
 
-function createGrassTileRect(x,y){
-  var randomNum = Math.round(random(0,1));
-  if(randomNum === 1){
+function createTile(x, y) {
+  var randomNum = Math.round(random(0, 1));
+  if (randomNum === 1) {
     fill("green");
   }
-  if(randomNum === 0){
+  if (randomNum === 0) {
     fill("darkgreen");
   }
-  rect(x,y, 40, 40);
+  rect(x, y, 40, 40);
   // grassTileGroup.add(bo1);
 }
 
@@ -129,17 +167,17 @@ function movebox() {
   boxY += boxSpeedY;
   boxSpeedX *= 0.95;
   boxSpeedY *= 0.95;
-  
-  if (left_key&&box.position.x>-1890) {
+
+  if (left_key && box.position.x > -1890) {
     boxSpeedX -= 0.3
   }
-  if (right_key && box.position.x< 1830) {
+  if (right_key && box.position.x < 1830) {
     boxSpeedX += 0.3
   }
-  if (up_key && box.position.y>90) {
+  if (up_key && box.position.y > 90) {
     boxSpeedY -= 0.3
   }
-  if (down_key && box.position.y<3810) {
+  if (down_key && box.position.y < 3810) {
     boxSpeedY += 0.3
   }
 
@@ -264,3 +302,13 @@ function windowResized() {
 }
 
 // -----------------------------------------------------------------------------------------------------------------------------------------
+
+function spritesTouching(x1, y1, img1, x2, y2, img2) {
+  if (x1 >= x2 + img2.width || x1 + img1.width <= x2) {
+    return false;   // too far to the side
+  }
+  if (y1 >= y2 + img2.height || y1 + img1.height <= y2) {
+    return false; // too far above/below
+  }
+  return true;                                                    // otherwise, overlap   
+}
