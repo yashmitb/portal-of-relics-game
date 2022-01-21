@@ -242,7 +242,7 @@ function showStamina() {
   // console.log();
   if(currentStamina>=185){
     staminaRect2.width =  185;
-  }
+  }//no reason
   else if(currentStamina<=0){
     currentLife-=3;
     currentStamina = 0;
