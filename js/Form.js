@@ -6,12 +6,13 @@ class Form {
         this.creditsButton = createButton("Credits");
         this.titleImg = createImg("./assets/title_db.png", "game title");
         this.greeting = createElement("h2");
+        this.message;
     }
 
     setElementsPosition() {
-        this.titleImg.position(230, height/2 -300);
+        this.titleImg.position(230, height / 2 - 300);
         this.input.position(width / 2 - 110, height / 2 - 80);
-        this.playButton.position(width / 2-90, height / 2 - 10);
+        this.playButton.position(width / 2 - 90, height / 2 - 10);
         this.aboutButton.position(width / 2 - 90, height / 2 + 60);
         this.creditsButton.position(width / 2 - 90, height / 2 + 130);
         this.greeting.position(width / 2 - 300, height / 2 - 100);
@@ -41,11 +42,12 @@ class Form {
             print("worked");
             this.hide();
             this.titleImg.class("gameTitleAfterEffect");
+            this.message = `${this.input.value()}`;
             createCanvas(windowWidth, windowHeight);
             gameState = 'play';
         });
 
-        this.aboutButton.mousePressed(()=>{
+        this.aboutButton.mousePressed(() => {
             swal({
                 icon: "info",
                 title: 'About',
@@ -53,10 +55,10 @@ class Form {
                 confirmButtonText: "Got it!"
             });
         })
-        this.creditsButton.mousePressed(()=>{
+        this.creditsButton.mousePressed(() => {
             swal({
                 title: "Credits",
-                text: "Game made by Yashmit Bhaverisetti (AKA Yoshi)" 
+                text: "Game made by Yashmit Bhaverisetti (AKA Yoshi)"
             })
         })
     }
@@ -65,5 +67,12 @@ class Form {
         this.setElementsPosition();
         this.setElementsStyle();
         this.handleMousePressed();
+    }
+    showText(){
+        textSize(50);
+        textAlign(CENTER);
+        text(this.message, box.position.x, box.position.y-100);
+        // text(this.message, windowWidth/2, box.position.y);
+        console.log(this.message);
     }
 }

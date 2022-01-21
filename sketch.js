@@ -8,12 +8,16 @@ let stone = "#676767";
 let snow = "#fffafa";
 let k = 0, t = 0, m = 0;
 
+let timer = 0;
 
 
 let tileGrass = "#7ec850";
 let tileDarkGrass = "#6dad45";
 let tileBrick = "#aa5544";
 
+let tileGrassImg;
+let tileGrassImg2;
+let tileBrickText;
 
 var gameState = 'form';
 
@@ -37,7 +41,22 @@ var bo1;
 var grassTileGroup, brickTileGroup;
 var random123 = 0;
 
-var edge1, edge2, edge3, edge4;
+var lifeRect1, lifeRect2;
+var currentLife = 185;
+var currentStamina = 185;
+var armourType;
+
+var staminaRect2, staminaRect1;
+
+
+
+function preload() {
+  tileGrassImg = loadImage('assets/grassTileTexture.jpg');
+  tileGrassImg2 = loadImage('assets/sGrassTile.png');
+  tileBrickText = loadImage('assets/brickTexture.png');
+  lifeImage = loadImage("./assets/life.png");
+
+}
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
@@ -65,6 +84,11 @@ function setup() {
   bg = loadImage('assets/bg.jpg');
 
   fill("red");
+  armourType = createSprite(box.position.x + 1900, box.position.y + 400, 50, 50);
+  lifeRect1 = createSprite(width / 2 - 100, height - box.positionY - 400, 185, 20);
+  lifeRect2 = createSprite(width / 2 - 100, height - box.positionY - 400, 185, 20);
+  staminaRect1 = createSprite(width / 2 - 100, height - box.positionY - 400, 185, 20);
+  staminaRect2 = createSprite(width / 2 - 100, height - box.positionY - 400, 185, 20);
 
 }
 
@@ -72,9 +96,24 @@ function draw() {
   if (gameState === 'form') {
     form.display();
   }
+
+  if (millis() >= 800+timer&&currentStamina<=185) {
+    currentStamina+=3;
+    timer = millis();
+  }
+
+  if(currentStamina>=140&&currentLife<=185){
+    currentLife+=0.1;
+  }
+
+  if(currentStamina<=0){
+    currentLife-=0.1;
+  }
+
   if (gameState === 'play') {
     // console.log("asd");
-
+    showLife();
+    showStamina();
     background(200);
     movebox();
     box.visible = true;
@@ -92,7 +131,6 @@ function draw() {
       }
       grassTileCreated = 1;
 
-
     }
 
     if (box.collide(brickTileGroup) === true) {
@@ -101,14 +139,16 @@ function draw() {
       boxSpeedY = boxSpeedY * -1;
       console.log(boxSpeedX);
       console.log(boxSpeedY);
+      currentLife -= 10;
     }
 
   }
-
-  // console.log(box.position);
+  // form.showText();
+  createArmour();
 
 
   drawSprites();
+  form.showText();
 }
 
 function createTiles(x, y) {
@@ -120,33 +160,100 @@ function createTiles(x, y) {
   var randomNum = Math.round(random(0, 5));
   if (randomNum === 0 || randomNum === 1 || randomNum === 2) {
     bo1.shapeColor = color(tileGrass);
-    bo1.depth = 0;
+    bo1.depth = -1;
+    // bo1.addImage('grass', tileGrassImg);
     grassTileGroup.add(bo1);
   }
   if (randomNum === 3) {
     bo1.shapeColor = color(tileDarkGrass);
-    bo1.depth = 0;
+    bo1.depth = -1;
+    // bo1.addImage('grass', tileGrassImg2);
     grassTileGroup.add(bo1);
   }
-  else{
+  else {
     bo1.shapeColor = color(tileGrass);
-    bo1.depth = 0;
+    bo1.depth = -1;
+    // bo1.addImage('grass', tileGrassImg);
     grassTileGroup.add(bo1);
   }
   if (randomNum === 5) {
     var randomNum = Math.round(random(0, 10));
-    if(randomNum === 3){
+    if (randomNum === 3) {
       bo1.shapeColor = color(tileBrick);
+      // bo1.addImage('grass', tileBrickText);
       bo1.depth = 0;
       brickTileGroup.add(bo1);
     }
-    else{
+    else {
       bo1.shapeColor = color(tileGrass);
-      bo1.depth = 0;
+      bo1.depth = -1;
+      // bo1.addImage('grass', tileGrassImg);
       grassTileGroup.add(bo1);
     }
   }
 
+}
+
+
+function createArmour() {
+  armourType.position.x = box.position.x + 900;
+  armourType.position.y = box.position.y - 100;
+  armourType.dept = 400;
+  armourType.shapeColor = "gray";
+}
+
+function showLife() {
+  // console.log("worked");
+  push();
+  image(lifeImage, width / 2 - 130, height - box.positionY - 400, 20, 20);
+  lifeRect1.position.x = box.position.x;
+  lifeRect1.position.y = box.position.y - 80;
+  lifeRect1.shapeColor = "white";
+  lifeRect1.dept = 59;
+  fill("#f50057");
+  // lifeRect2 = createSprite( width / 2 - 100, height - box.positionY - 400, 185, 20);//chnage positions
+  lifeRect2.position.x = box.position.x;
+  lifeRect2.position.y = box.position.y - 80;
+  // console.log();
+  if(currentLife>=185){
+    lifeRect2.width =  185;
+  }
+  else{
+    lifeRect2.width =  currentLife;
+  }
+  lifeRect2.shapeColor = "red";
+  lifeRect2.dept = 60;
+  noStroke();
+  pop();
+}
+
+function showStamina() {
+  // console.log("worked");
+  push();
+  image(lifeImage, width / 2 - 130, height - box.positionY - 400, 20, 20);
+  staminaRect1.position.x = box.position.x;
+  staminaRect1.position.y = box.position.y - 50;
+  staminaRect1.shapeColor = "white";
+  staminaRect1.dept = 59;
+  fill("#f50057");
+  // lifeRect2 = createSprite( width / 2 - 100, height - box.positionY - 400, 185, 20);//chnage positions
+  staminaRect2.position.x = box.position.x;
+  staminaRect2.position.y = box.position.y - 50;
+  // console.log();
+  if(currentStamina>=185){
+    staminaRect2.width =  185;
+  }
+  else if(currentStamina<=0){
+    currentLife-=3;
+    currentStamina = 0;
+  }
+  else{
+    staminaRect2.width =  currentStamina;
+  }
+  staminaRect2.shapeColor = "yellow";
+  staminaRect2.dept = 60;
+  noStroke();
+  pop();
 }
 
 function createTile(x, y) {
@@ -170,15 +277,19 @@ function movebox() {
 
   if (left_key && box.position.x > -1890) {
     boxSpeedX -= 0.3
+    currentStamina-=0.1;
   }
   if (right_key && box.position.x < 1830) {
     boxSpeedX += 0.3
+    currentStamina-=0.1;
   }
   if (up_key && box.position.y > 90) {
     boxSpeedY -= 0.3
+    currentStamina-=0.1;
   }
   if (down_key && box.position.y < 3810) {
     boxSpeedY += 0.3
+    currentStamina-=0.1;
   }
 
 
@@ -201,6 +312,7 @@ function keyPressed() {
 }
 
 function keyReleased() {
+  // currentStamina+=5;
   if (keyCode == LEFT_ARROW) {
     left_key = false;
   }
