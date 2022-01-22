@@ -73,6 +73,6 @@ class Form {
         textAlign(CENTER);
         text(this.message, box.position.x, box.position.y-100);
         // text(this.message, windowWidth/2, box.position.y);
-        console.log(this.message);
+        // console.log(this.message);
     }
 }
