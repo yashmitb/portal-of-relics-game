@@ -22,6 +22,7 @@ let tileBrickText;
 var gameState = 'form';
 
 var form;
+var randomCounter;
 
 var grassTileCreated = 0;
 
@@ -49,7 +50,7 @@ var armourType;
 var staminaRect2, staminaRect1;
 
 var coinsNum = 60, coinGroup, coin;
-var keysNum = 5, keysGroup, keys;
+var keysNumMNM = 5, keysGroup, keys, totalKeys = 0;;
 
 
 
@@ -77,6 +78,7 @@ function setup() {
   grassTileGroup = new Group();
   brickTileGroup = new Group();
   coinGroup = new Group();
+  keysGroup = new Group();
   form = new Form();
   form.display();
   fill("gray");
@@ -135,7 +137,7 @@ function draw() {
       console.log(boxSpeedY);
       currentLife -= 10;
     }
-    MapCreater();
+    // MapCreater();
 
 
   }
@@ -148,10 +150,11 @@ function draw() {
   // console.log(coinGroup.leght);
 
   box.collide(coinGroup, removeBlocks);
+  box.collide(keysGroup, removeKeys);
 
-
+  
   form.showText();
-  if(gameState === 'play'){
+  if (gameState === 'play') {
     allText();
   }
 }
@@ -162,11 +165,17 @@ function removeBlocks(sprite, coin) {
   // console.log(coinsNum);
 }
 
-function allText() {
-  textSize(20);
-  text('Coins: '+coinsNum,box.position.x - 850, box.position.y - 100);
+function removeKeys(sprite, key) {
+  key.remove();
+  totalKeys += 1;
+  // console.log(coinsNum);
 }
 
+function allText() {
+  textSize(20);
+  text('Coins: ' + coinsNum, box.position.x - 150, box.position.y - 100);
+  text('Keys: ' + totalKeys, box.position.x - 150, box.position.y - 130);
+}
 
 function MapCreater() {
   if (grassTileCreated === 0) {
@@ -176,6 +185,7 @@ function MapCreater() {
       }
       random123 = random123 + 100;
     }
+    genKeys(5);
     grassTileCreated = 1;
 
   }
@@ -205,10 +215,8 @@ function createTiles(x, y) {
       coin.rotation = Math.round(random(0, 90));
       coin.shapeColor = "yellow";
       coinGroup.add(coin);
+
     }
-
-
-
   }
   if (randomNum === 3) {
     bo1.shapeColor = color(tileDarkGrass);
@@ -229,6 +237,7 @@ function createTiles(x, y) {
       // bo1.addImage('grass', tileBrickText);
       bo1.depth = 0;
       brickTileGroup.add(bo1);
+
     }
     else {
       bo1.shapeColor = color(tileGrass);
@@ -238,6 +247,19 @@ function createTiles(x, y) {
     }
   }
 
+}
+function genKeys(minValKeys) {
+  var randomNum1 = Math.round(random(minValKeys, minValKeys + 2));
+  for (var i = 0; i <= randomNum1; i++) {
+    var xR = Math.round(random(-windowWidth, windowWidth*2))
+    var yR = Math.round(random(-windowHeight, windowHeight*2))
+    keys = createSprite(xR, yR, 20, 40);
+    keys.rotation = Math.round(random(0, 90));
+    keys.shapeColor = "grey";
+    keysGroup.add(keys);
+    randomCounter += 1;
+    console.log(randomCounter);
+  }
 }
 
 
