@@ -50,7 +50,13 @@ var armourType;
 var staminaRect2, staminaRect1;
 
 var coinsNum = 60, coinGroup, coin;
-var keysNumMNM = 5, keysGroup, keys, totalKeys = 0;;
+var keysNumMNM = 5, keysGroup, keys, totalKeys = 0;
+
+var shopSprite;
+var shopSpriteVisible = false;
+
+var swordShopButton, arrowShopButton, armourShopButton;
+
 
 
 
@@ -91,10 +97,25 @@ function setup() {
 
   fill("red");
   armourType = createSprite(box.position.x + 1900, box.position.y + 400, 50, 50);
+  armourType.visible = false;
   lifeRect1 = createSprite(width / 2 - 100, height - box.positionY - 400, 185, 20);
   lifeRect2 = createSprite(width / 2 - 100, height - box.positionY - 400, 185, 20);
   staminaRect1 = createSprite(width / 2 - 100, height - box.positionY - 400, 185, 20);
   staminaRect2 = createSprite(width / 2 - 100, height - box.positionY - 400, 185, 20);
+
+
+
+  shopSprite = createSprite(box.position.x, box.position.y, 400, 800);
+  shopSprite.shapeColor = '#747982';
+  shopSprite.visible = false;
+
+
+  swordShopButton = createSprite(box.position.x, box.position.y, 400, 100);
+  arrowShopButton = createSprite(box.position.x, box.position.y, 400, 100);
+  armourShopButton = createSprite(box.position.x, box.position.y, 400, 100);
+  arrowShopButton.visible = false;
+  swordShopButton.visible = false;
+  armourShopButton.visible = false;
 
 }
 
@@ -117,6 +138,7 @@ function draw() {
   }
 
   if (gameState === 'play') {
+    armourType.visible = true;
     // console.log("asd");
     showLife();
     showStamina();
@@ -152,12 +174,52 @@ function draw() {
   box.collide(coinGroup, removeBlocks);
   box.collide(keysGroup, removeKeys);
 
-  
+
   form.showText();
   if (gameState === 'play') {
     allText();
   }
+  shop();
 }
+
+
+function shop() {
+  if (shopSpriteVisible == true) {
+    shopSprite.position.x = box.position.x - windowWidth / 4.7;
+    shopSprite.position.y = box.position.y;
+
+    swordShopButton.position.x = box.position.x - windowWidth / 4.7;
+    swordShopButton.position.y = box.position.y-300;
+
+    arrowShopButton.position.x = box.position.x - windowWidth / 4.7;
+    arrowShopButton.position.y = box.position.y-180;
+
+    armourShopButton.position.x = box.position.x - windowWidth / 4.7;
+    armourShopButton.position.y = box.position.y-60;
+
+
+    text("Upgrade your Sword for 20 coins", box.position.x - windowWidth / 4.7,box.position.y-300);
+    text("Upgrade your Bow for 20 coins", box.position.x - windowWidth / 4.7,box.position.y-180);
+    text("Upgrade your Armour for 20 coins", box.position.x - windowWidth / 4.7,box.position.y-60);
+
+    swordShopButton.shapeColor = "#303338";
+    arrowShopButton.shapeColor = "#303338";
+    armourShopButton.shapeColor = "#303338";
+    swordShopButton.dept = shopSprite.dept+1;
+    arrowShopButton.dept = shopSprite.dept+1;
+    armourShopButton.dept = shopSprite.dept+1;
+    swordShopButton.visible = true;
+    arrowShopButton.visible = true;
+    armourShopButton.visible = true;
+  }
+  else{
+    arrowShopButton.visible = false;
+    swordShopButton.visible = false;
+    armourShopButton.visible = false;
+  }
+}
+
+
 
 function removeBlocks(sprite, coin) {
   coin.remove();
@@ -170,6 +232,8 @@ function removeKeys(sprite, key) {
   totalKeys += 1;
   // console.log(coinsNum);
 }
+
+
 
 function allText() {
   textSize(20);
@@ -251,8 +315,8 @@ function createTiles(x, y) {
 function genKeys(minValKeys) {
   var randomNum1 = Math.round(random(minValKeys, minValKeys + 2));
   for (var i = 0; i <= randomNum1; i++) {
-    var xR = Math.round(random(-windowWidth, windowWidth*2))
-    var yR = Math.round(random(-windowHeight, windowHeight*2))
+    var xR = Math.round(random(-windowWidth, windowWidth * 2))
+    var yR = Math.round(random(-windowHeight, windowHeight * 2))
     keys = createSprite(xR, yR, 20, 40);
     keys.rotation = Math.round(random(0, 90));
     keys.shapeColor = "grey";
@@ -389,6 +453,17 @@ function keyReleased() {
   if (keyCode == DOWN_ARROW || keyCode == 83) {
     down_key = false;
   }
+
+  if (keyCode == 81 && shopSpriteVisible == false) {
+    shopSprite.visible = true;
+    shopSpriteVisible = true;
+
+  }
+  else if (keyCode == 81 && shopSpriteVisible == true) {
+    shopSprite.visible = false;
+    shopSpriteVisible = false;
+  }
+
 }
 
 function makeMap() {
