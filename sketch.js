@@ -10,7 +10,7 @@ let k = 0, t = 0, m = 0;
 
 let timer = 0;
 
-
+let a;
 let tileGrass = "#7ec850";
 let tileDarkGrass = "#6dad45";
 let tileBrick = "#aa5544";
@@ -55,7 +55,12 @@ var keysNumMNM = 5, keysGroup, keys, totalKeys = 0;
 var shopSprite;
 var shopSpriteVisible = false;
 
-var swordShopButton, arrowShopButton, armourShopButton;
+var swordShopButton, arrowShopButton, armourShopButton, buyRelicButton;
+
+var handSprite, portalImg;
+
+var arrowG = [];
+
 
 
 
@@ -66,6 +71,8 @@ function preload() {
   tileGrassImg2 = loadImage('assets/sGrassTile.png');
   tileBrickText = loadImage('assets/brickTexture.png');
   lifeImage = loadImage("./assets/life.png");
+  lifeImage = loadImage("./assets/life.png");
+  portalImg = loadImage("./assets/port.png");
 }
 
 function setup() {
@@ -89,7 +96,7 @@ function setup() {
   form.display();
   fill("gray");
   box = createSprite(windowWidth / 2, windowHeight / 2, 50, 50);
-  box.depth = 10000000;
+  box.depth = 1000;
 
   box.visible = false;
   box.shapeColor = color(255, 0, 0);
@@ -113,9 +120,18 @@ function setup() {
   swordShopButton = createSprite(box.position.x, box.position.y, 400, 100);
   arrowShopButton = createSprite(box.position.x, box.position.y, 400, 100);
   armourShopButton = createSprite(box.position.x, box.position.y, 400, 100);
+  buyRelicButton = createSprite(box.position.x, box.position.y, 400, 100);
   arrowShopButton.visible = false;
+  buyRelicButton.visible = false;
   swordShopButton.visible = false;
   armourShopButton.visible = false;
+  handSprite = createSprite(100,100,120,30);
+  handSprite.shapeColor = 'purple';
+  handSprite.addImage('asd', portalImg);
+  handSprite.scale = 0.5;
+  handSprite.dept = box.dept+1;
+  handSprite.visible = false;
+
 
 }
 
@@ -138,7 +154,11 @@ function draw() {
   }
 
   if (gameState === 'play') {
-    armourType.visible = true;
+    for (let bullet of arrowG) {
+      bullet.update();
+      bullet.draw();
+    }
+    // armourType.visible = true; ///asdhjaksdjaskldjasjkdjnaskjmdaskjmdhjkajsdhk
     // console.log("asd");
     showLife();
     showStamina();
@@ -149,6 +169,11 @@ function draw() {
     box.position.y = boxY;
     camera.position.x = box.position.x;
     camera.position.y = boxY;
+    cursor(CROSS);
+    handSprite.dept = 1000000;
+
+    // handSprite.position.x = mouseX-windowWidth/2;
+    // handSprite.position.y = mouseY-windowHeight/2 + 350;
 
     MapCreater();
     if (box.collide(brickTileGroup) === true) {
@@ -182,6 +207,19 @@ function draw() {
   shop();
 }
 
+function shoot(){
+  var b = new Bullet(box.position.x, box.position.y, a);
+  b.createbull();
+  arrowG.push(b);
+  currentStamina-=1;
+}
+
+function mouseClicked() {
+  if(gameState === "play"){
+    shoot();
+    console.log("wo");
+  }
+}
 
 function shop() {
   if (shopSpriteVisible == true) {
@@ -189,33 +227,41 @@ function shop() {
     shopSprite.position.y = box.position.y;
 
     swordShopButton.position.x = box.position.x - windowWidth / 4.7;
-    swordShopButton.position.y = box.position.y-300;
+    swordShopButton.position.y = box.position.y - 300;
 
     arrowShopButton.position.x = box.position.x - windowWidth / 4.7;
     arrowShopButton.position.y = box.position.y-180;
 
     armourShopButton.position.x = box.position.x - windowWidth / 4.7;
-    armourShopButton.position.y = box.position.y-60;
+    armourShopButton.position.y = box.position.y - 60;
+
+    buyRelicButton.position.x = box.position.x - windowWidth / 4.7;
+    buyRelicButton.position.y = box.position.y + 60;
 
 
-    text("Upgrade your Sword for 20 coins", box.position.x - windowWidth / 4.7,box.position.y-300);
+    text("Upgrade your Fist for 20 coins", box.position.x - windowWidth / 4.7, box.position.y - 300);
     text("Upgrade your Bow for 20 coins", box.position.x - windowWidth / 4.7,box.position.y-180);
-    text("Upgrade your Armour for 20 coins", box.position.x - windowWidth / 4.7,box.position.y-60);
+    text("Upgrade your Armour for 20 coins", box.position.x - windowWidth / 4.7, box.position.y - 60);
+    text("Get 3 keys to unlock the Relic", box.position.x - windowWidth / 4.7, box.position.y + 60);
 
     swordShopButton.shapeColor = "#303338";
     arrowShopButton.shapeColor = "#303338";
     armourShopButton.shapeColor = "#303338";
-    swordShopButton.dept = shopSprite.dept+1;
+    buyRelicButton.shapeColor = "#303338";
+    swordShopButton.dept = shopSprite.dept + 1;
     arrowShopButton.dept = shopSprite.dept+1;
-    armourShopButton.dept = shopSprite.dept+1;
+    armourShopButton.dept = shopSprite.dept + 1;
+    buyRelicButton.dept = shopSprite.dept + 1;
     swordShopButton.visible = true;
     arrowShopButton.visible = true;
     armourShopButton.visible = true;
+    buyRelicButton.visible = true;
   }
-  else{
+  else {
     arrowShopButton.visible = false;
     swordShopButton.visible = false;
     armourShopButton.visible = false;
+    buyRelicButton.visible = false;
   }
 }
 
@@ -399,8 +445,10 @@ function movebox() {
   boxY += boxSpeedY;
   boxSpeedX *= 0.95;
   boxSpeedY *= 0.95;
-  let a = atan2(mouseY - windowHeight / 2, mouseX - windowWidth / 2);
+  a = atan2(mouseY - windowHeight / 2, mouseX - windowWidth / 2);
   box.rotation = a * (180 / 3.14);
+  // handSprite.rotation = a * (180 / 3.14);
+
   // console.log(mouseX);
 
   if (left_key && box.position.x > -1890) {
