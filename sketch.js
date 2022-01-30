@@ -31,6 +31,12 @@ var up_key = false;
 var right_key = false;
 var down_key = false;
 
+
+var one_key = false;
+var two_key = false;
+var three_key = false;
+var four_key = false;
+
 var boxX = 40;
 var boxY = 350;
 var boxSpeedX = 0;
@@ -49,7 +55,7 @@ var armourType;
 
 var staminaRect2, staminaRect1;
 
-var coinsNum = 60, coinGroup, coin;
+var coinsNum = 15, coinGroup, coin;
 var keysNumMNM = 5, keysGroup, keys, totalKeys = 0;
 
 var shopSprite;
@@ -60,6 +66,13 @@ var swordShopButton, arrowShopButton, armourShopButton, buyRelicButton;
 var handSprite, portalImg;
 
 var arrowG = [];
+
+
+
+
+var setBowUnlocked = false;
+
+var setDamage = 1;
 
 
 
@@ -132,6 +145,8 @@ function setup() {
   handSprite.dept = box.dept+1;
   handSprite.visible = false;
 
+
+  
 
 }
 
@@ -215,7 +230,7 @@ function shoot(){
 }
 
 function mouseClicked() {
-  if(gameState === "play"){
+  if(gameState === "play"&&setBowUnlocked === true){
     shoot();
     console.log("wo");
   }
@@ -239,10 +254,10 @@ function shop() {
     buyRelicButton.position.y = box.position.y + 60;
 
 
-    text("Upgrade your Fist for 20 coins", box.position.x - windowWidth / 4.7, box.position.y - 300);
-    text("Upgrade your Bow for 20 coins", box.position.x - windowWidth / 4.7,box.position.y-180);
-    text("Upgrade your Armour for 20 coins", box.position.x - windowWidth / 4.7, box.position.y - 60);
-    text("Get 3 keys to unlock the Relic", box.position.x - windowWidth / 4.7, box.position.y + 60);
+    text("Upgrade your Fist for 20 coins(Press '1')", box.position.x - windowWidth / 4.7, box.position.y - 300);
+    text("Upgrade your Bow for 20 coins(Press '2')", box.position.x - windowWidth / 4.7,box.position.y-180);
+    text("Upgrade your Armour for 20 coins(Press '3')", box.position.x - windowWidth / 4.7, box.position.y - 60);
+    text("Get 3 keys to unlock the Relic(Press '4')", box.position.x - windowWidth / 4.7, box.position.y + 60);
 
     swordShopButton.shapeColor = "#303338";
     arrowShopButton.shapeColor = "#303338";
@@ -256,6 +271,28 @@ function shop() {
     arrowShopButton.visible = true;
     armourShopButton.visible = true;
     buyRelicButton.visible = true;
+
+    if(one_key === true){
+      console.log("fist up");
+      one_key = false;
+    }
+
+    if(two_key === true){
+      console.log("bow up");
+      two_key = false;
+    }
+
+    if(three_key === true){
+      console.log("armour up");
+      three_key = false;
+    }
+
+    if(four_key === true){
+      console.log("relic");
+      four_key = false;
+    }
+
+
   }
   else {
     arrowShopButton.visible = false;
@@ -264,7 +301,6 @@ function shop() {
     buyRelicButton.visible = false;
   }
 }
-
 
 
 function removeBlocks(sprite, coin) {
@@ -472,6 +508,7 @@ function movebox() {
 
 }
 
+
 function keyPressed() {
   if (keyCode == LEFT_ARROW || keyCode == 65) {
     left_key = true;
@@ -484,6 +521,20 @@ function keyPressed() {
   }
   if (keyCode == DOWN_ARROW || keyCode == 83) {
     down_key = true;
+  }
+
+  if (keyCode == 49) {
+    one_key = true;
+  }
+
+  if (keyCode == 50) {
+    two_key = true;
+  }
+  if (keyCode == 51) {
+    three_key = true;
+  }
+  if (keyCode == 52) {
+    four_key = true;
   }
 }
 
@@ -502,7 +553,21 @@ function keyReleased() {
     down_key = false;
   }
 
-  if (keyCode == 81 && shopSpriteVisible == false) {
+  if (keyCode == 49) {
+    one_key = false;
+  }
+
+  if (keyCode == 50) {
+    two_key = false;
+  }
+  if (keyCode == 51) {
+    three_key = false;
+  }
+  if (keyCode == 52) {
+    four_key = false;
+  }
+
+  if (keyCode == 81 && shopSpriteVisible == false&&gameState== 'play') {
     shopSprite.visible = true;
     shopSpriteVisible = true;
 
