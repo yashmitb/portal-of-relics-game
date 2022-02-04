@@ -55,7 +55,7 @@ var armourType;
 
 var staminaRect2, staminaRect1;
 
-var coinsNum = 15, coinGroup, coin;
+var coinsNum = 200, coinGroup, coin;//ASJKLBDNDFKLNSDFKL:MNSDLFKNLSKDNMFLKJMSDLFK
 var keysNumMNM = 5, keysGroup, keys, totalKeys = 0;
 
 var shopSprite;
@@ -67,14 +67,24 @@ var handSprite, portalImg;
 
 var arrowG = [];
 
+var fistUnlocked = false;
+var bowUnlocked = false;
+var healthMult = 1;
+var relicUnlocked = false;;
+
+
 
 
 
 var setBowUnlocked = false;
 
 var setDamage = 1;
-
-
+var priceMult = 1;
+let frame = 0;
+let zombieSpawnTime = 300;
+let zombieMaxSpeed = 2;
+let zombies = [];
+var maxZoms = 30;
 
 
 
@@ -138,15 +148,15 @@ function setup() {
   buyRelicButton.visible = false;
   swordShopButton.visible = false;
   armourShopButton.visible = false;
-  handSprite = createSprite(100,100,120,30);
+  handSprite = createSprite(100, 100, 120, 30);
   handSprite.shapeColor = 'purple';
   handSprite.addImage('asd', portalImg);
   handSprite.scale = 0.5;
-  handSprite.dept = box.dept+1;
+  handSprite.dept = box.dept + 1;
   handSprite.visible = false;
 
 
-  
+
 
 }
 
@@ -206,6 +216,31 @@ function draw() {
   // form.showText();
   createArmour();
 
+  if (gameState === 'play') {
+    var randum = Math.round(random(0, 100));
+    if (frameCount % 60 && randum === 10 && maxZoms <= 60) {
+      var z = new Zombie(1);
+      z.createZom();
+      zombies.push(z);
+      maxZoms += 1;
+
+    }
+
+    for (let i = zombies.length - 1; i >= 0; i--) {
+      zombies[i].draw();
+      zombies[i].update();
+
+      if (zombies[i].ateYou()) {
+        currentLife -= 30 / healthMult;
+        zombies.splice(i, 1);
+      }
+
+      if (hasShot(zombies[i])) {
+        zombies.splice(i, 1);
+        coinsNum += 3;
+      }
+    }
+  }
 
   drawSprites();
 
@@ -222,17 +257,27 @@ function draw() {
   shop();
 }
 
-function shoot(){
+function hasShot(zombie) {
+  for (let i = 0; i < this.arrowG.length; i++) {
+    if (dist(this.arrowG[i].x, this.arrowG[i].y, zombie.pos.x, zombie.pos.y) < 15) {
+      this.arrowG.splice(i, 1);
+      return true;
+    }
+  }
+  return false;
+}
+
+function shoot() {
   var b = new Bullet(box.position.x, box.position.y, a);
   b.createbull();
   arrowG.push(b);
-  currentStamina-=1;
+  currentStamina -= 5;
 }
 
 function mouseClicked() {
-  if(gameState === "play"&&setBowUnlocked === true){
+  if (gameState === "play" && bowUnlocked === true) {
     shoot();
-    console.log("wo");
+    // console.log("wo");
   }
 }
 
@@ -245,7 +290,7 @@ function shop() {
     swordShopButton.position.y = box.position.y - 300;
 
     arrowShopButton.position.x = box.position.x - windowWidth / 4.7;
-    arrowShopButton.position.y = box.position.y-180;
+    arrowShopButton.position.y = box.position.y - 180;
 
     armourShopButton.position.x = box.position.x - windowWidth / 4.7;
     armourShopButton.position.y = box.position.y - 60;
@@ -254,17 +299,46 @@ function shop() {
     buyRelicButton.position.y = box.position.y + 60;
 
 
-    text("Upgrade your Fist for 20 coins(Press '1')", box.position.x - windowWidth / 4.7, box.position.y - 300);
-    text("Upgrade your Bow for 20 coins(Press '2')", box.position.x - windowWidth / 4.7,box.position.y-180);
-    text("Upgrade your Armour for 20 coins(Press '3')", box.position.x - windowWidth / 4.7, box.position.y - 60);
-    text("Get 3 keys to unlock the Relic(Press '4')", box.position.x - windowWidth / 4.7, box.position.y + 60);
+    var price = 20 * priceMult;
+    // text("Unlock your Fist for 20 coins(Press '1')", box.position.x - windowWidth / 4.7, box.position.y - 300);
+    if (fistUnlocked === false) {
+      text("Unlock your Fist for 20 coins(Press '1')", box.position.x - windowWidth / 4.7, box.position.y - 300);
+    }
+    else if (fistUnlocked === true) {
+      text("Fist Unlocked!", box.position.x - windowWidth / 4.7, box.position.y - 300);
+
+    }
+
+    if (bowUnlocked === false) {
+      text("Unlock your Bow for 20 coins(Press '2')", box.position.x - windowWidth / 4.7, box.position.y - 180);
+    }
+    else if (bowUnlocked === true) {
+      text("Bow Unlocked", box.position.x - windowWidth / 4.7, box.position.y - 180);
+    }
+
+    if (bowUnlocked === false) {
+      text("Unlock your Bow for 20 coins(Press '2')", box.position.x - windowWidth / 4.7, box.position.y - 180);
+    }
+    else if (bowUnlocked === true) {
+      text("Bow Unlocked", box.position.x - windowWidth / 4.7, box.position.y - 180);
+    }
+
+    if (relicUnlocked === false) {
+      text("Get 3 keys to unlock the Relic(Press '4')", box.position.x - windowWidth / 4.7, box.position.y + 60);
+    }
+    else if (relicUnlocked === true) {
+      text("Relic has been unlocked, head to the portal!", box.position.x - windowWidth / 4.7, box.position.y + 60);
+    }
+
+
+    text("Upgrade your Armour for " + price + " coins(Press '3')", box.position.x - windowWidth / 4.7, box.position.y - 60);
 
     swordShopButton.shapeColor = "#303338";
     arrowShopButton.shapeColor = "#303338";
     armourShopButton.shapeColor = "#303338";
     buyRelicButton.shapeColor = "#303338";
     swordShopButton.dept = shopSprite.dept + 1;
-    arrowShopButton.dept = shopSprite.dept+1;
+    arrowShopButton.dept = shopSprite.dept + 1;
     armourShopButton.dept = shopSprite.dept + 1;
     buyRelicButton.dept = shopSprite.dept + 1;
     swordShopButton.visible = true;
@@ -272,23 +346,34 @@ function shop() {
     armourShopButton.visible = true;
     buyRelicButton.visible = true;
 
-    if(one_key === true){
+    if (one_key === true && coinsNum >= 20 && fistUnlocked === false) {
+      fistUnlocked = true;
+      coinsNum -= 20;
       console.log("fist up");
       one_key = false;
+      text("Fist Unlocked!", box.position.x - windowWidth / 4.7, box.position.y - 300);
+
     }
 
-    if(two_key === true){
+    if (two_key === true && coinsNum >= 20 && bowUnlocked === false) {
+      bowUnlocked = true;
+      coinsNum -= 20;
       console.log("bow up");
       two_key = false;
     }
-
-    if(three_key === true){
+    if (three_key === true && coinsNum >= price) {
+      healthMult += 1;
+      priceMult += 1;
+      console.log(price);
+      coinsNum -= price;
       console.log("armour up");
       three_key = false;
     }
 
-    if(four_key === true){
+    if (four_key === true && totalKeys >= 1) {
       console.log("relic");
+      relicUnlocked = true;
+      totalKeys = 0;
       four_key = false;
     }
 
@@ -567,7 +652,7 @@ function keyReleased() {
     four_key = false;
   }
 
-  if (keyCode == 81 && shopSpriteVisible == false&&gameState== 'play') {
+  if (keyCode == 81 && shopSpriteVisible == false && gameState == 'play') {
     shopSprite.visible = true;
     shopSpriteVisible = true;
 

@@ -11,7 +11,7 @@ class Bullet {
         this.bull.shapeColor = 'black';
         this.bull.dept = 234890230;
         this.bull.rotation = this.angle;
-        console.log("created bullet");
+        // console.log("created bullet");
     }
     
     draw() {
