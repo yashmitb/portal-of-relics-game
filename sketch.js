@@ -55,7 +55,7 @@ var armourType;
 
 var staminaRect2, staminaRect1;
 
-var coinsNum = 200, coinGroup, coin;//ASJKLBDNDFKLNSDFKL:MNSDLFKNLSKDNMFLKJMSDLFK
+var coinsNum = 15, coinGroup, coin;//ASJKLBDNDFKLNSDFKL:MNSDLFKNLSKDNMFLKJMSDLFK
 var keysNumMNM = 5, keysGroup, keys, totalKeys = 0;
 
 var shopSprite;
@@ -85,7 +85,7 @@ let zombieSpawnTime = 300;
 let zombieMaxSpeed = 2;
 let zombies = [];
 var maxZoms = 30;
-
+var deptOfT = 0;
 
 
 
@@ -178,7 +178,7 @@ function draw() {
     currentLife -= 0.1;
   }
 
-  if (gameState === 'play') {
+  if (gameState === 'play' || gameState === 'secondLevel') {
     for (let bullet of arrowG) {
       bullet.update();
       bullet.draw();
@@ -200,7 +200,7 @@ function draw() {
     // handSprite.position.x = mouseX-windowWidth/2;
     // handSprite.position.y = mouseY-windowHeight/2 + 350;
 
-    MapCreater();
+    MapCreater(deptOfT);
     if (box.collide(brickTileGroup) === true) {
       // console.log("asd");
       boxSpeedX = boxSpeedX * -1;
@@ -216,7 +216,25 @@ function draw() {
   // form.showText();
   createArmour();
 
-  if (gameState === 'play') {
+  // grassTileCreated = 0;
+  if (gameState === 'secondLevel') {
+    if (grassTileCreated === 1) {
+      var random123 = 0;
+      grassTileCreated = 0;
+      if (grassTileCreated === 0) {
+        for (var u = 0; u < 40; u++) {
+          for (var i = 0; i < 40; i++) {
+            createTiles(windowWidth - i * 100, random123, deptOfT + 1);
+          }
+          random123 = random123 + 100;
+        }
+        genKeys(5);
+        grassTileCreated = 1;
+
+      }
+      console.log("one time only?");
+      grassTileCreated = 2;
+    }
     var randum = Math.round(random(0, 100));
     if (frameCount % 60 && randum === 10 && maxZoms <= 60) {
       var z = new Zombie(1);
@@ -244,14 +262,13 @@ function draw() {
 
   drawSprites();
 
-  // console.log(coinGroup.leght);
 
   box.collide(coinGroup, removeBlocks);
   box.collide(keysGroup, removeKeys);
 
 
   form.showText();
-  if (gameState === 'play') {
+  if (gameState === 'play' || gameState === 'secondLevel') {
     allText();
   }
   shop();
@@ -275,7 +292,7 @@ function shoot() {
 }
 
 function mouseClicked() {
-  if (gameState === "play" && bowUnlocked === true) {
+  if (bowUnlocked === true) {
     shoot();
     // console.log("wo");
   }
@@ -329,7 +346,14 @@ function shop() {
     else if (relicUnlocked === true) {
       text("Relic has been unlocked, head to the portal!", box.position.x - windowWidth / 4.7, box.position.y + 60);
     }
-
+    if (relicUnlocked === true) {
+      // gameState = "secondLevel";
+      grassTileGroup.removeSprites();
+      brickTileGroup.removeSprites();
+      coinGroup.removeSprites();
+      keysGroup.removeSprites();
+      relicUnlocked = false;
+    }
 
     text("Upgrade your Armour for " + price + " coins(Press '3')", box.position.x - windowWidth / 4.7, box.position.y - 60);
 
@@ -370,11 +394,12 @@ function shop() {
       three_key = false;
     }
 
-    if (four_key === true && totalKeys >= 1) {
+    if (four_key === true && totalKeys >= 3) {
       console.log("relic");
       relicUnlocked = true;
       totalKeys = 0;
       four_key = false;
+
     }
 
 
@@ -408,11 +433,11 @@ function allText() {
   text('Keys: ' + totalKeys, box.position.x - 150, box.position.y - 130);
 }
 
-function MapCreater() {
+function MapCreater(dept) {
   if (grassTileCreated === 0) {
     for (var u = 0; u < 40; u++) {
       for (var i = 0; i < 40; i++) {
-        createTiles(windowWidth - i * 100, random123);
+        createTiles(windowWidth - i * 100, random123, dept);
       }
       random123 = random123 + 100;
     }
@@ -420,14 +445,9 @@ function MapCreater() {
     grassTileCreated = 1;
 
   }
-
-
-
-
-
 }
 
-function createTiles(x, y) {
+function createTiles(x, y, dept) {
   bo1 = createSprite(x, y, 100, 100);
   // console.log(Math.random(0, 5));
   //grass most common 0,1,2
@@ -436,7 +456,7 @@ function createTiles(x, y) {
   var randomNum = Math.round(random(0, 5));
   if (randomNum === 0 || randomNum === 1 || randomNum === 2) {
     bo1.shapeColor = color(tileGrass);
-    bo1.depth = -1;
+    bo1.depth = dept;
     // bo1.addImage('grass', tileGrassImg);
     grassTileGroup.add(bo1);
 
@@ -451,13 +471,13 @@ function createTiles(x, y) {
   }
   if (randomNum === 3) {
     bo1.shapeColor = color(tileDarkGrass);
-    bo1.depth = -1;
+    bo1.depth = dept;
     // bo1.addImage('grass', tileGrassImg2);
     grassTileGroup.add(bo1);
   }
   else {
     bo1.shapeColor = color(tileGrass);
-    bo1.depth = -1;
+    bo1.depth = dept;
     // bo1.addImage('grass', tileGrassImg);
     grassTileGroup.add(bo1);
   }
@@ -466,13 +486,13 @@ function createTiles(x, y) {
     if (randomNum === 3) {
       bo1.shapeColor = color(tileBrick);
       // bo1.addImage('grass', tileBrickText);
-      bo1.depth = 0;
+      bo1.depth = dept;
       brickTileGroup.add(bo1);
 
     }
     else {
       bo1.shapeColor = color(tileGrass);
-      bo1.depth = -1;
+      bo1.depth = 0;
       // bo1.addImage('grass', tileGrassImg);
       grassTileGroup.add(bo1);
     }
@@ -652,7 +672,7 @@ function keyReleased() {
     four_key = false;
   }
 
-  if (keyCode == 81 && shopSpriteVisible == false && gameState == 'play') {
+  if (keyCode == 81 && shopSpriteVisible == false) {
     shopSprite.visible = true;
     shopSpriteVisible = true;
 
