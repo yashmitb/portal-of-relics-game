@@ -178,7 +178,7 @@ function draw() {
     currentLife -= 0.1;
   }
 
-  if (gameState === 'play' || gameState === 'secondLevel') {
+  if (gameState === 'play' || gameState === 'secondLevel'||gameState === 'bossLevel') {
     for (let bullet of arrowG) {
       bullet.update();
       bullet.draw();
@@ -218,6 +218,7 @@ function draw() {
 
   // grassTileCreated = 0;
   if (gameState === 'secondLevel') {
+    // zombies=[];
     if (grassTileCreated === 1) {
       var random123 = 0;
       grassTileCreated = 0;
@@ -260,6 +261,38 @@ function draw() {
     }
   }
 
+
+  if (gameState === 'bossLevel') {
+    if (grassTileCreated === 1) {
+      zombies=[];
+      var random123 = 0;
+      grassTileCreated = 0;
+      if (grassTileCreated === 0) {
+        for (var u = 0; u < 40; u++) {
+          for (var i = 0; i < 40; i++) {
+            createTiles(windowWidth - i * 100, random123, deptOfT + 1);
+          }
+          random123 = random123 + 100;
+        }
+        genKeys(5);
+        grassTileCreated = 1;
+
+      }
+      console.log("one time only?");
+      grassTileCreated = 2;
+    }
+    var randum = Math.round(random(0, 100));
+    if (frameCount % 60 && randum === 10 && maxZoms <= 60) {
+      var z = new Zombie(1);
+      z.createZom();
+      zombies.push(z);
+      maxZoms += 1;
+
+    }
+
+
+  }
+
   drawSprites();
 
 
@@ -268,7 +301,7 @@ function draw() {
 
 
   form.showText();
-  if (gameState === 'play' || gameState === 'secondLevel') {
+  if (gameState === 'play' || gameState === 'secondLevel'|| gameState === 'bossLevel') {
     allText();
   }
   shop();
@@ -347,7 +380,15 @@ function shop() {
       text("Relic has been unlocked, head to the portal!", box.position.x - windowWidth / 4.7, box.position.y + 60);
     }
     if (relicUnlocked === true) {
-      // gameState = "secondLevel";
+      if(gameState==="secondLevel"){
+        gameState = "bossLevel";
+        grassTileCreated = 1;
+        
+      }
+      else{
+        gameState = "secondLevel";
+
+      }
       grassTileGroup.removeSprites();
       brickTileGroup.removeSprites();
       coinGroup.removeSprites();
