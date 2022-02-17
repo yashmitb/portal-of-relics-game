@@ -6,7 +6,9 @@ let sand = "#eecda3";
 let grass = "#7ec850";
 let stone = "#676767";
 let snow = "#fffafa";
-let k = 0, t = 0, m = 0;
+let k = 0,
+  t = 0,
+  m = 0;
 
 let timer = 0;
 
@@ -19,7 +21,7 @@ let tileGrassImg;
 let tileGrassImg2;
 let tileBrickText;
 
-var gameState = 'form';
+var gameState = "form";
 
 var form;
 var randomCounter;
@@ -31,18 +33,17 @@ var up_key = false;
 var right_key = false;
 var down_key = false;
 
-
 var one_key = false;
 var two_key = false;
 var three_key = false;
 var four_key = false;
 
-var boxX = 40;
-var boxY = 350;
-var boxSpeedX = 0;
-var boxSpeedY = 0;
+var playerX = 40;
+var playerY = 350;
+var playerSpeedX = 0;
+var playerSpeedY = 0;
 
-var box;
+var player;
 var bg;
 var bo1;
 var grassTileGroup, brickTileGroup;
@@ -55,8 +56,13 @@ var armourType;
 
 var staminaRect2, staminaRect1;
 
-var coinsNum = 15, coinGroup, coin;//ASJKLBDNDFKLNSDFKL:MNSDLFKNLSKDNMFLKJMSDLFK
-var keysNumMNM = 5, keysGroup, keys, totalKeys = 0;
+var coinsNum = 15,
+  coinGroup,
+  coin; //ASJKLBDNDFKLNSDFKL:MNSDLFKNLSKDNMFLKJMSDLFK
+var keysNumMNM = 5,
+  keysGroup,
+  keys,
+  totalKeys = 0;
 
 var shopSprite;
 var shopSpriteVisible = false;
@@ -68,15 +74,11 @@ var handSprite, portalImg;
 var arrowG = [];
 
 var fistUnlocked = false;
-var bowUnlocked = false;
+var gunUnlocked = false;
 var healthMult = 1;
-var relicUnlocked = false;;
+var relicUnlocked = false;
 
-
-
-
-
-var setBowUnlocked = false;
+var setgunUnlocked = false;
 
 var setDamage = 1;
 var priceMult = 1;
@@ -86,16 +88,32 @@ let zombieMaxSpeed = 2;
 let zombies = [];
 var maxZoms = 30;
 var deptOfT = 0;
+var currentLevel = 1;
+var keysNeeded = 3;
+var score = 0;
 
+var playerStanding, playerMoving, zombie, playerGun, tile1, tile2;
 
+var coinIMG, keyIMG;
+var bulletIMG;
 
 function preload() {
-  tileGrassImg = loadImage('assets/grassTileTexture.jpg');
-  tileGrassImg2 = loadImage('assets/sGrassTile.png');
-  tileBrickText = loadImage('assets/brickTexture.png');
+  tileGrassImg = loadImage("assets/grassTileTexture.jpg");
+  tileGrassImg2 = loadImage("assets/sGrassTile.png");
+  tileBrickText = loadImage("assets/brickTexture.png");
   lifeImage = loadImage("./assets/life.png");
   lifeImage = loadImage("./assets/life.png");
   portalImg = loadImage("./assets/port.png");
+
+  playerStanding = loadImage("./assets/manBlue_stand.png");
+  playerMoving = loadImage("./assets/manBlue_hold.png");
+  playerGun = loadImage("./assets/manBlue_silencer.png");
+  zombie = loadImage("./assets/zombie.png");
+  tile1 = loadImage("./assets/tile_01.png");
+  tile2 = loadImage("./assets/tile_02.png");
+  coinIMG = loadImage("./assets/coin1.png");
+  keyIMG = loadImage("./assets/key.png");
+  bulletIMG = loadImage("./assets/bullet.png");
 }
 
 function setup() {
@@ -118,50 +136,88 @@ function setup() {
   form = new Form();
   form.display();
   fill("gray");
-  box = createSprite(windowWidth / 2, windowHeight / 2, 50, 50);
-  box.depth = 1000;
+  player = createSprite(windowWidth / 2, windowHeight / 2, 50, 50);
+  player.depth = 1000;
 
-  box.visible = false;
-  box.shapeColor = color(255, 0, 0);
-  bg = loadImage('assets/bg.jpg');
+  player.visible = false;
+  player.shapeColor = color(255, 0, 0);
+  player.scale = 1.1;
+  bg = loadImage("assets/bg.jpg");
 
   fill("red");
-  armourType = createSprite(box.position.x + 1900, box.position.y + 400, 50, 50);
+  armourType = createSprite(
+    player.position.x + 1900,
+    player.position.y + 400,
+    50,
+    50
+  );
   armourType.visible = false;
-  lifeRect1 = createSprite(width / 2 - 100, height - box.positionY - 400, 185, 20);
-  lifeRect2 = createSprite(width / 2 - 100, height - box.positionY - 400, 185, 20);
-  staminaRect1 = createSprite(width / 2 - 100, height - box.positionY - 400, 185, 20);
-  staminaRect2 = createSprite(width / 2 - 100, height - box.positionY - 400, 185, 20);
+  lifeRect1 = createSprite(
+    width / 2 - 100,
+    height - player.positionY - 400,
+    185,
+    20
+  );
+  lifeRect2 = createSprite(
+    width / 2 - 100,
+    height - player.positionY - 400,
+    185,
+    20
+  );
+  staminaRect1 = createSprite(
+    width / 2 - 100,
+    height - player.positionY - 400,
+    185,
+    20
+  );
+  staminaRect2 = createSprite(
+    width / 2 - 100,
+    height - player.positionY - 400,
+    185,
+    20
+  );
 
-
-
-  shopSprite = createSprite(box.position.x, box.position.y, 400, 800);
-  shopSprite.shapeColor = '#747982';
+  shopSprite = createSprite(player.position.x, player.position.y, 400, 800);
+  shopSprite.shapeColor = "#747982";
   shopSprite.visible = false;
 
-
-  swordShopButton = createSprite(box.position.x, box.position.y, 400, 100);
-  arrowShopButton = createSprite(box.position.x, box.position.y, 400, 100);
-  armourShopButton = createSprite(box.position.x, box.position.y, 400, 100);
-  buyRelicButton = createSprite(box.position.x, box.position.y, 400, 100);
+  swordShopButton = createSprite(
+    player.position.x,
+    player.position.y,
+    400,
+    100
+  );
+  arrowShopButton = createSprite(
+    player.position.x,
+    player.position.y,
+    400,
+    100
+  );
+  armourShopButton = createSprite(
+    player.position.x,
+    player.position.y,
+    400,
+    100
+  );
+  buyRelicButton = createSprite(player.position.x, player.position.y, 400, 100);
   arrowShopButton.visible = false;
   buyRelicButton.visible = false;
   swordShopButton.visible = false;
   armourShopButton.visible = false;
   handSprite = createSprite(100, 100, 120, 30);
-  handSprite.shapeColor = 'purple';
-  handSprite.addImage('asd', portalImg);
+  handSprite.shapeColor = "purple";
   handSprite.scale = 0.5;
-  handSprite.dept = box.dept + 1;
+  handSprite.dept = player.dept + 1;
   handSprite.visible = false;
 
-
-
-
+  //assets
+  player.addImage("standing", playerStanding);
+  player.addImage("moving", playerMoving);
+  player.addImage("gunHold", playerGun);
 }
 
 function draw() {
-  if (gameState === 'form') {
+  if (gameState === "form") {
     form.display();
   }
 
@@ -178,7 +234,11 @@ function draw() {
     currentLife -= 0.1;
   }
 
-  if (gameState === 'play' || gameState === 'secondLevel'||gameState === 'bossLevel') {
+  if (
+    gameState === "play" ||
+    gameState === "secondLevel" ||
+    gameState === "bossLevel"
+  ) {
     for (let bullet of arrowG) {
       bullet.update();
       bullet.draw();
@@ -188,12 +248,12 @@ function draw() {
     showLife();
     showStamina();
     background(200);
-    movebox();
-    box.visible = true;
-    box.position.x = boxX;
-    box.position.y = boxY;
-    camera.position.x = box.position.x;
-    camera.position.y = boxY;
+    moveplayer();
+    player.visible = true;
+    player.position.x = playerX;
+    player.position.y = playerY;
+    camera.position.x = player.position.x;
+    camera.position.y = playerY;
     cursor(CROSS);
     handSprite.dept = 1000000;
 
@@ -201,23 +261,21 @@ function draw() {
     // handSprite.position.y = mouseY-windowHeight/2 + 350;
 
     MapCreater(deptOfT);
-    if (box.collide(brickTileGroup) === true) {
+    if (player.collide(brickTileGroup) === true) {
       // console.log("asd");
-      boxSpeedX = boxSpeedX * -1;
-      boxSpeedY = boxSpeedY * -1;
-      console.log(boxSpeedX);
-      console.log(boxSpeedY);
+      playerSpeedX = playerSpeedX * -1;
+      playerSpeedY = playerSpeedY * -1;
+      console.log(playerSpeedX);
+      console.log(playerSpeedY);
       currentLife -= 10;
     }
     // MapCreater();
-
-
   }
   // form.showText();
   createArmour();
 
   // grassTileCreated = 0;
-  if (gameState === 'secondLevel') {
+  if (gameState === "secondLevel") {
     // zombies=[];
     if (grassTileCreated === 1) {
       var random123 = 0;
@@ -229,9 +287,8 @@ function draw() {
           }
           random123 = random123 + 100;
         }
-        genKeys(5);
+        genKeys(keysNeeded + 2);
         grassTileCreated = 1;
-
       }
       console.log("one time only?");
       grassTileCreated = 2;
@@ -242,7 +299,6 @@ function draw() {
       z.createZom();
       zombies.push(z);
       maxZoms += 1;
-
     }
 
     for (let i = zombies.length - 1; i >= 0; i--) {
@@ -261,10 +317,9 @@ function draw() {
     }
   }
 
-
-  if (gameState === 'bossLevel') {
-    if (grassTileCreated === 1) {
-      zombies=[];
+  if (gameState === "bossLevel") {
+    if (grassTileCreated === 2) {
+      zombies = [];
       var random123 = 0;
       grassTileCreated = 0;
       if (grassTileCreated === 0) {
@@ -274,12 +329,11 @@ function draw() {
           }
           random123 = random123 + 100;
         }
-        genKeys(5);
+        genKeys(keysNeeded + 2);
         grassTileCreated = 1;
-
       }
       console.log("one time only?");
-      grassTileCreated = 2;
+      grassTileCreated = 1;
     }
     var randum = Math.round(random(0, 100));
     if (frameCount % 60 && randum === 10 && maxZoms <= 60) {
@@ -287,29 +341,37 @@ function draw() {
       z.createZom();
       zombies.push(z);
       maxZoms += 1;
-
     }
-
-
   }
 
   drawSprites();
 
-
-  box.collide(coinGroup, removeBlocks);
-  box.collide(keysGroup, removeKeys);
-
+  player.collide(coinGroup, removeBlocks);
+  player.collide(keysGroup, removeKeys);
 
   form.showText();
-  if (gameState === 'play' || gameState === 'secondLevel'|| gameState === 'bossLevel') {
+  if (
+    gameState === "play" ||
+    gameState === "secondLevel" ||
+    gameState === "bossLevel"
+  ) {
     allText();
   }
   shop();
+
+  if (gameState === "play") {
+    if (currentLife <= 0) {
+      location.reload();
+      currentLife = 180;
+    }
+  }
 }
 
 function hasShot(zombie) {
   for (let i = 0; i < this.arrowG.length; i++) {
-    if (dist(this.arrowG[i].x, this.arrowG[i].y, zombie.pos.x, zombie.pos.y) < 15) {
+    if (
+      dist(this.arrowG[i].x, this.arrowG[i].y, zombie.pos.x, zombie.pos.y) < 15
+    ) {
       this.arrowG.splice(i, 1);
       return true;
     }
@@ -318,14 +380,14 @@ function hasShot(zombie) {
 }
 
 function shoot() {
-  var b = new Bullet(box.position.x, box.position.y, a);
+  var b = new Bullet(player.position.x, player.position.y, a);
   b.createbull();
   arrowG.push(b);
   currentStamina -= 5;
 }
 
 function mouseClicked() {
-  if (bowUnlocked === true) {
+  if (gunUnlocked === true) {
     shoot();
     // console.log("wo");
   }
@@ -333,61 +395,87 @@ function mouseClicked() {
 
 function shop() {
   if (shopSpriteVisible == true) {
-    shopSprite.position.x = box.position.x - windowWidth / 4.7;
-    shopSprite.position.y = box.position.y;
+    shopSprite.position.x = player.position.x - windowWidth / 4.7;
+    shopSprite.position.y = player.position.y;
 
-    swordShopButton.position.x = box.position.x - windowWidth / 4.7;
-    swordShopButton.position.y = box.position.y - 300;
+    swordShopButton.position.x = player.position.x - windowWidth / 4.7;
+    swordShopButton.position.y = player.position.y - 300;
 
-    arrowShopButton.position.x = box.position.x - windowWidth / 4.7;
-    arrowShopButton.position.y = box.position.y - 180;
+    arrowShopButton.position.x = player.position.x - windowWidth / 4.7;
+    arrowShopButton.position.y = player.position.y - 180;
 
-    armourShopButton.position.x = box.position.x - windowWidth / 4.7;
-    armourShopButton.position.y = box.position.y - 60;
+    armourShopButton.position.x = player.position.x - windowWidth / 4.7;
+    armourShopButton.position.y = player.position.y - 60;
 
-    buyRelicButton.position.x = box.position.x - windowWidth / 4.7;
-    buyRelicButton.position.y = box.position.y + 60;
-
+    buyRelicButton.position.x = player.position.x - windowWidth / 4.7;
+    buyRelicButton.position.y = player.position.y + 60;
 
     var price = 20 * priceMult;
-    // text("Unlock your Fist for 20 coins(Press '1')", box.position.x - windowWidth / 4.7, box.position.y - 300);
+    // text("Unlock your Fist for 20 coins(Press '1')", player.position.x - windowWidth / 4.7, player.position.y - 300);
     if (fistUnlocked === false) {
-      text("Unlock your Fist for 20 coins(Press '1')", box.position.x - windowWidth / 4.7, box.position.y - 300);
+      text(
+        "Unlock your Fist for 20 coins(Press '1')",
+        player.position.x - windowWidth / 4.7,
+        player.position.y - 300
+      );
+    } else if (fistUnlocked === true) {
+      text(
+        "Fist Unlocked!",
+        player.position.x - windowWidth / 4.7,
+        player.position.y - 300
+      );
     }
-    else if (fistUnlocked === true) {
-      text("Fist Unlocked!", box.position.x - windowWidth / 4.7, box.position.y - 300);
 
+    if (gunUnlocked === false) {
+      text(
+        "Unlock your gun for 50 coins(Press '2')",
+        player.position.x - windowWidth / 4.7,
+        player.position.y - 180
+      );
+    } else if (gunUnlocked === true) {
+      text(
+        "gun Unlocked",
+        player.position.x - windowWidth / 4.7,
+        player.position.y - 180
+      );
     }
 
-    if (bowUnlocked === false) {
-      text("Unlock your Bow for 20 coins(Press '2')", box.position.x - windowWidth / 4.7, box.position.y - 180);
-    }
-    else if (bowUnlocked === true) {
-      text("Bow Unlocked", box.position.x - windowWidth / 4.7, box.position.y - 180);
-    }
-
-    if (bowUnlocked === false) {
-      text("Unlock your Bow for 20 coins(Press '2')", box.position.x - windowWidth / 4.7, box.position.y - 180);
-    }
-    else if (bowUnlocked === true) {
-      text("Bow Unlocked", box.position.x - windowWidth / 4.7, box.position.y - 180);
+    if (gunUnlocked === false) {
+      text(
+        "Unlock your gun for 50 coins(Press '2')",
+        player.position.x - windowWidth / 4.7,
+        player.position.y - 180
+      );
+    } else if (gunUnlocked === true) {
+      text(
+        "gun Unlocked",
+        player.position.x - windowWidth / 4.7,
+        player.position.y - 180
+      );
     }
 
     if (relicUnlocked === false) {
-      text("Get 3 keys to unlock the Relic(Press '4')", box.position.x - windowWidth / 4.7, box.position.y + 60);
-    }
-    else if (relicUnlocked === true) {
-      text("Relic has been unlocked, head to the portal!", box.position.x - windowWidth / 4.7, box.position.y + 60);
+      text(
+        "Go to Next Level for " + keysNeeded + " (Press '4')",
+        player.position.x - windowWidth / 4.7,
+        player.position.y + 60
+      );
+    } else if (relicUnlocked === true) {
+      text(
+        "Relic has been unlocked, head to the portal!",
+        player.position.x - windowWidth / 4.7,
+        player.position.y + 60
+      );
     }
     if (relicUnlocked === true) {
-      if(gameState==="secondLevel"){
+      if (gameState === "secondLevel") {
+        // gameState = "bossLevel";
+        // grassTileCreated = 1;
         gameState = "bossLevel";
-        grassTileCreated = 1;
-        
-      }
-      else{
+        console.log(gameState);
+      } else {
         gameState = "secondLevel";
-
+        console.log(gameState);
       }
       grassTileGroup.removeSprites();
       brickTileGroup.removeSprites();
@@ -396,7 +484,11 @@ function shop() {
       relicUnlocked = false;
     }
 
-    text("Upgrade your Armour for " + price + " coins(Press '3')", box.position.x - windowWidth / 4.7, box.position.y - 60);
+    text(
+      "Upgrade your Armour for " + price + " coins(Press '3')",
+      player.position.x - windowWidth / 4.7,
+      player.position.y - 60
+    );
 
     swordShopButton.shapeColor = "#303338";
     arrowShopButton.shapeColor = "#303338";
@@ -416,14 +508,17 @@ function shop() {
       coinsNum -= 20;
       console.log("fist up");
       one_key = false;
-      text("Fist Unlocked!", box.position.x - windowWidth / 4.7, box.position.y - 300);
-
+      text(
+        "Fist Unlocked!",
+        player.position.x - windowWidth / 4.7,
+        player.position.y - 300
+      );
     }
 
-    if (two_key === true && coinsNum >= 20 && bowUnlocked === false) {
-      bowUnlocked = true;
+    if (two_key === true && coinsNum >= 0 && gunUnlocked === false) {
+      gunUnlocked = true;
       coinsNum -= 20;
-      console.log("bow up");
+      console.log("gun up");
       two_key = false;
     }
     if (three_key === true && coinsNum >= price) {
@@ -435,24 +530,23 @@ function shop() {
       three_key = false;
     }
 
-    if (four_key === true && totalKeys >= 3) {
+    if (four_key === true && totalKeys >= 0) {
       console.log("relic");
       relicUnlocked = true;
       totalKeys = 0;
       four_key = false;
-
+      currentLevel += 1;
+      keysNeeded += 2;
+      player.position.x = 0;
+      player.position.y = 0;
     }
-
-
-  }
-  else {
+  } else {
     arrowShopButton.visible = false;
     swordShopButton.visible = false;
     armourShopButton.visible = false;
     buyRelicButton.visible = false;
   }
 }
-
 
 function removeBlocks(sprite, coin) {
   coin.remove();
@@ -466,12 +560,18 @@ function removeKeys(sprite, key) {
   // console.log(coinsNum);
 }
 
-
-
 function allText() {
+  score = currentLevel * keysNeeded;
   textSize(20);
-  text('Coins: ' + coinsNum, box.position.x - 150, box.position.y - 100);
-  text('Keys: ' + totalKeys, box.position.x - 150, box.position.y - 130);
+  text("Coins: " + coinsNum, player.position.x - 150, player.position.y - 100);
+  text("Keys: " + totalKeys, player.position.x - 150, player.position.y - 130);
+  text("Level: " + currentLevel, player.position.x, player.position.y - 400);
+  text(
+    "Keys needed: " + keysNeeded,
+    player.position.x,
+    player.position.y - 370
+  );
+  text("Score: " + score, player.position.x, player.position.y - 340);
 }
 
 function MapCreater(dept) {
@@ -482,9 +582,8 @@ function MapCreater(dept) {
       }
       random123 = random123 + 100;
     }
-    genKeys(5);
+    genKeys(keysNeeded + 2);
     grassTileCreated = 1;
-
   }
 }
 
@@ -506,8 +605,9 @@ function createTiles(x, y, dept) {
       coin = createSprite(x, y, 20, 20);
       coin.rotation = Math.round(random(0, 90));
       coin.shapeColor = "yellow";
+      coin.addImage("coin", coinIMG);
+      coin.scale = 0.13;
       coinGroup.add(coin);
-
     }
   }
   if (randomNum === 3) {
@@ -515,8 +615,7 @@ function createTiles(x, y, dept) {
     bo1.depth = dept;
     // bo1.addImage('grass', tileGrassImg2);
     grassTileGroup.add(bo1);
-  }
-  else {
+  } else {
     bo1.shapeColor = color(tileGrass);
     bo1.depth = dept;
     // bo1.addImage('grass', tileGrassImg);
@@ -529,35 +628,33 @@ function createTiles(x, y, dept) {
       // bo1.addImage('grass', tileBrickText);
       bo1.depth = dept;
       brickTileGroup.add(bo1);
-
-    }
-    else {
+    } else {
       bo1.shapeColor = color(tileGrass);
       bo1.depth = 0;
       // bo1.addImage('grass', tileGrassImg);
       grassTileGroup.add(bo1);
     }
   }
-
 }
 function genKeys(minValKeys) {
   var randomNum1 = Math.round(random(minValKeys, minValKeys + 2));
   for (var i = 0; i <= randomNum1; i++) {
-    var xR = Math.round(random(-windowWidth, windowWidth * 2))
-    var yR = Math.round(random(-windowHeight, windowHeight * 2))
+    var xR = Math.round(random(-windowWidth, windowWidth * 2));
+    var yR = Math.round(random(-windowHeight, windowHeight * 2));
     keys = createSprite(xR, yR, 20, 40);
     keys.rotation = Math.round(random(0, 90));
     keys.shapeColor = "grey";
+    keys.addImage("keyIMG", keyIMG);
+    keys.scale = 0.1;
     keysGroup.add(keys);
     randomCounter += 1;
     console.log(randomCounter);
   }
 }
 
-
 function createArmour() {
-  armourType.position.x = box.position.x + 900;
-  armourType.position.y = box.position.y - 100;
+  armourType.position.x = player.position.x + 900;
+  armourType.position.y = player.position.y - 100;
   armourType.dept = 400;
   armourType.shapeColor = "gray";
 }
@@ -565,95 +662,131 @@ function createArmour() {
 function showLife() {
   // console.log("worked");
   push();
-  image(lifeImage, width / 2 - 130, height - box.positionY - 400, 20, 20);
-  lifeRect1.position.x = box.position.x;
-  lifeRect1.position.y = box.position.y - 80;
-  lifeRect1.shapeColor = "white";
-  lifeRect1.dept = 59;
-  fill("#f50057");
-  // lifeRect2 = createSprite( width / 2 - 100, height - box.positionY - 400, 185, 20);//chnage positions
-  lifeRect2.position.x = box.position.x;
-  lifeRect2.position.y = box.position.y - 80;
-  // console.log();
+  if (currentLife <= 185) {
+    lifeRect1.visible = true;
+    lifeRect2.visible = true;
+    image(lifeImage, width / 2 - 130, height - player.positionY - 400, 20, 20);
+    lifeRect1.position.x = player.position.x;
+    lifeRect1.position.y = player.position.y - 80;
+    lifeRect1.shapeColor = "white";
+    lifeRect1.dept = 59;
+    fill("#f50057");
+    // lifeRect2 = createSprite( width / 2 - 100, height - player.positionY - 400, 185, 20);//chnage positions
+    lifeRect2.position.x = player.position.x;
+    lifeRect2.position.y = player.position.y - 80;
+    // console.log();
+    lifeRect2.shapeColor = "red";
+    lifeRect2.dept = 60;
+    noStroke();
+  } else {
+    lifeRect1.visible = false;
+    lifeRect2.visible = false;
+  }
   if (currentLife >= 185) {
     lifeRect2.width = 185;
-  }
-  else if (currentLife <= 0) {
+  } else if (currentLife <= 0) {
     currentLife = 0;
-  }
-  else {
+  } else {
     lifeRect2.width = currentLife;
   }
-  lifeRect2.shapeColor = "red";
-  lifeRect2.dept = 60;
-  noStroke();
   pop();
 }
 
 function showStamina() {
   // console.log("worked");
   push();
-  image(lifeImage, width / 2 - 130, height - box.positionY - 400, 20, 20);
-  staminaRect1.position.x = box.position.x;
-  staminaRect1.position.y = box.position.y - 50;
-  staminaRect1.shapeColor = "white";
-  staminaRect1.dept = 59;
-  fill("#f50057");
-  // lifeRect2 = createSprite( width / 2 - 100, height - box.positionY - 400, 185, 20);//chnage positions
-  staminaRect2.position.x = box.position.x;
-  staminaRect2.position.y = box.position.y - 50;
-  // console.log();
   if (currentStamina >= 185) {
     staminaRect2.width = 185;
-  }//no reason
-  else if (currentStamina <= 0) {
+  } else if (currentStamina <= 0) {
     currentLife -= 3;
     currentStamina = 0;
-  }
-  else {
+  } else {
     staminaRect2.width = currentStamina;
   }
-  staminaRect2.shapeColor = "yellow";
-  staminaRect2.dept = 60;
-  noStroke();
+  if (currentStamina <= 185) {
+    staminaRect1.visible = true;
+    staminaRect2.visible = true;
+    image(lifeImage, width / 2 - 130, height - player.positionY - 400, 20, 20);
+    staminaRect1.position.x = player.position.x;
+    staminaRect1.position.y = player.position.y - 50;
+    staminaRect1.shapeColor = "white";
+    staminaRect1.dept = 59;
+    fill("#f50057");
+    // lifeRect2 = createSprite( width / 2 - 100, height - player.positionY - 400, 185, 20);//chnage positions
+    staminaRect2.position.x = player.position.x;
+    staminaRect2.position.y = player.position.y - 50;
+    // console.log();
+    staminaRect2.shapeColor = "yellow";
+    staminaRect2.dept = 60;
+    noStroke();
+  } else {
+    // console.log("");
+    staminaRect1.visible = false;
+    staminaRect2.visible = false;
+  }
   pop();
 }
 
-
-
-
-function movebox() {
-  boxX += boxSpeedX;
-  boxY += boxSpeedY;
-  boxSpeedX *= 0.95;
-  boxSpeedY *= 0.95;
+function moveplayer() {
+  playerX += playerSpeedX;
+  playerY += playerSpeedY;
+  playerSpeedX *= 0.95;
+  playerSpeedY *= 0.95;
   a = atan2(mouseY - windowHeight / 2, mouseX - windowWidth / 2);
-  box.rotation = a * (180 / 3.14);
+  player.rotation = a * (180 / 3.14);
   // handSprite.rotation = a * (180 / 3.14);
 
   // console.log(mouseX);
 
-  if (left_key && box.position.x > -1890) {
-    boxSpeedX -= 0.3
+  if (left_key && player.position.x > -1890) {
+    playerSpeedX -= 0.3;
     currentStamina -= 0.1;
+    if (gunUnlocked === true) {
+      player.changeImage("gunHold");
+      console.log("Its working");
+    } else {
+      player.changeImage("moving");
+    }
   }
-  if (right_key && box.position.x < 1830) {
-    boxSpeedX += 0.3
+  if (right_key && player.position.x < 1830) {
+    playerSpeedX += 0.3;
     currentStamina -= 0.1;
+    // player.changeImage("moving");
+    if (gunUnlocked === true) {
+      player.changeImage("gunHold");
+    } else {
+      player.changeImage("moving");
+    }
   }
-  if (up_key && box.position.y > 90) {
-    boxSpeedY -= 0.3
+  if (up_key && player.position.y > 90) {
+    playerSpeedY -= 0.3;
     currentStamina -= 0.1;
+    // player.changeImage("moving");
+    if (gunUnlocked === true) {
+      player.changeImage("gunHold");
+    } else {
+      player.changeImage("moving");
+    }
   }
-  if (down_key && box.position.y < 3810) {
-    boxSpeedY += 0.3
+  if (down_key && player.position.y < 3810) {
+    playerSpeedY += 0.3;
     currentStamina -= 0.1;
+    // player.changeImage("moving");
+    if (gunUnlocked === true) {
+      player.changeImage("gunHold");
+    } else {
+      player.changeImage("moving");
+    }
   }
-
-
-
+  if (
+    down_key === false &&
+    up_key === false &&
+    right_key === false &&
+    left_key === false
+  ) {
+    // player.changeImage("standing");
+  }
 }
-
 
 function keyPressed() {
   if (keyCode == LEFT_ARROW || keyCode == 65) {
@@ -716,13 +849,10 @@ function keyReleased() {
   if (keyCode == 81 && shopSpriteVisible == false) {
     shopSprite.visible = true;
     shopSpriteVisible = true;
-
-  }
-  else if (keyCode == 81 && shopSpriteVisible == true) {
+  } else if (keyCode == 81 && shopSpriteVisible == true) {
     shopSprite.visible = false;
     shopSpriteVisible = false;
   }
-
 }
 
 function makeMap() {
@@ -736,54 +866,42 @@ function makeMap() {
 }
 
 function pickColor(i, j) {
-  let h = noise((i) * noiseScale,
-    (j) * noiseScale);
+  let h = noise(i * noiseScale, j * noiseScale);
   let c = "#facade";
 
   if (h < 0.2) {
     c = ocean;
-  }
-  else if (h < 0.3) {
+  } else if (h < 0.3) {
     if (random() > pow(h - 0.2, 2) * 100) {
       c = ocean;
-    }
-    else {
+    } else {
       c = shore;
     }
-  }
-  else if (h < 0.4) {
+  } else if (h < 0.4) {
     if (random() > pow(h - 0.3, 2) * 100) {
       c = shore;
-    }
-    else {
+    } else {
       c = sand;
     }
-  }
-  else if (h < 0.5) {
+  } else if (h < 0.5) {
     if (random() > pow(h - 0.4, 2) * 100) {
       c = sand;
-    }
-    else {
+    } else {
       c = grass;
     }
-  }
-  else if (h < 0.6) {
+  } else if (h < 0.6) {
     if (random() > pow(h - 0.5, 2) * 100) {
       c = grass;
-    }
-    else {
+    } else {
       c = stone;
     }
-  }
-  else if (h < 0.7) {
+  } else if (h < 0.7) {
     if (random() > pow(h - 0.6, 2) * 100) {
       c = stone;
-    }
-    else {
+    } else {
       c = snow;
     }
-  }
-  else {
+  } else {
     c = snow;
   }
 
@@ -793,7 +911,7 @@ function pickColor(i, j) {
 function drawMap() {
   for (let i = 0; i < width; i++) {
     for (let j = 0; j < height; j++) {
-      set(i, j, map[i][j])
+      set(i, j, map[i][j]);
     }
   }
   updatePixels();
@@ -815,10 +933,10 @@ function windowResized() {
 
 function spritesTouching(x1, y1, img1, x2, y2, img2) {
   if (x1 >= x2 + img2.width || x1 + img1.width <= x2) {
-    return false;   // too far to the side
+    return false; // too far to the side
   }
   if (y1 >= y2 + img2.height || y1 + img1.height <= y2) {
     return false; // too far above/below
   }
-  return true;                                                    // otherwise, overlap   
+  return true; // otherwise, overlap
 }
