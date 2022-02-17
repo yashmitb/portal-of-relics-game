@@ -515,9 +515,9 @@ function shop() {
       );
     }
 
-    if (two_key === true && coinsNum >= 0 && gunUnlocked === false) {
+    if (two_key === true && coinsNum >= 50 && gunUnlocked === false) {
       gunUnlocked = true;
-      coinsNum -= 20;
+      coinsNum -= 50;
       console.log("gun up");
       two_key = false;
     }
@@ -530,7 +530,7 @@ function shop() {
       three_key = false;
     }
 
-    if (four_key === true && totalKeys >= 0) {
+    if (four_key === true && totalKeys >= keysNeeded) {
       console.log("relic");
       relicUnlocked = true;
       totalKeys = 0;
