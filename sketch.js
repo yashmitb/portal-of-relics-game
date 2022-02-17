@@ -784,7 +784,7 @@ function moveplayer() {
     right_key === false &&
     left_key === false
   ) {
-    // player.changeImage("standing");
+    player.changeImage("standing");
   }
 }
 
