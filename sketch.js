@@ -359,12 +359,34 @@ function draw() {
   }
   shop();
 
-  if (gameState === "play") {
+  if (
+    gameState === "play" ||
+    gameState === "secondLevel" ||
+    gameState === "bossLevel"
+  ) {
     if (currentLife <= 0) {
-      location.reload();
+      // text("Game over", player.position.x - 150, player.position.y);
+      // await new Promise((r) => setTimeout(r, 2000));
+      // location.reload();
       currentLife = 180;
+      gameOver();
     }
   }
+}
+function gameOver() {
+  swal(
+    {
+      title: `Game Over!!!`,
+      text: "Thanks for playing!!",
+      icon: "success",
+      confirmButtonText: "Play Again?",
+    },
+    function (isConfirm) {
+      if (isConfirm) {
+        location.reload();
+      }
+    }
+  );
 }
 
 function hasShot(zombie) {
@@ -373,6 +395,7 @@ function hasShot(zombie) {
       dist(this.arrowG[i].x, this.arrowG[i].y, zombie.pos.x, zombie.pos.y) < 15
     ) {
       this.arrowG.splice(i, 1);
+      // maxZoms -= 1;
       return true;
     }
   }
@@ -530,7 +553,8 @@ function shop() {
       three_key = false;
     }
 
-    if (four_key === true && totalKeys >= keysNeeded) {
+    if (four_key === true && totalKeys >= 0) {
+      //come back here
       console.log("relic");
       relicUnlocked = true;
       totalKeys = 0;
@@ -572,6 +596,9 @@ function allText() {
     player.position.y - 370
   );
   text("Score: " + score, player.position.x, player.position.y - 340);
+  if (currentLife <= 0) {
+    text("Game over", player.position.x - 150, player.position.y);
+  }
 }
 
 function MapCreater(dept) {
