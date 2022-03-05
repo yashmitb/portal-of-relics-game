@@ -96,6 +96,7 @@ var playerStanding, playerMoving, zombie, playerGun, tile1, tile2;
 
 var coinIMG, keyIMG;
 var bulletIMG;
+var zombieDead;
 
 function preload() {
   tileGrassImg = loadImage("assets/grassTileTexture.jpg");
@@ -109,6 +110,7 @@ function preload() {
   playerMoving = loadImage("./assets/manBlue_hold.png");
   playerGun = loadImage("./assets/manBlue_silencer.png");
   zombie = loadImage("./assets/zombie.png");
+  zombieDead = loadImage("./assets/trans1.png");
   tile1 = loadImage("./assets/tile_01.png");
   tile2 = loadImage("./assets/tile_02.png");
   coinIMG = loadImage("./assets/coin1.png");
@@ -265,8 +267,8 @@ function draw() {
       // console.log("asd");
       playerSpeedX = playerSpeedX * -1;
       playerSpeedY = playerSpeedY * -1;
-      console.log(playerSpeedX);
-      console.log(playerSpeedY);
+      // console.log(playerSpeedX);
+      // console.log(playerSpeedY);
       currentLife -= 10;
     }
     // MapCreater();
@@ -290,7 +292,7 @@ function draw() {
         genKeys(keysNeeded + 2);
         grassTileCreated = 1;
       }
-      console.log("one time only?");
+      // console.log("one time only?");
       grassTileCreated = 2;
     }
     var randum = Math.round(random(0, 100));
@@ -304,15 +306,40 @@ function draw() {
     for (let i = zombies.length - 1; i >= 0; i--) {
       zombies[i].draw();
       zombies[i].update();
+      // console.log(zombies[i].state);
+      // console.log(dist(zombies[i].position.x, zombies[i].position.y, player.position.x, player.position.y) < 20);
 
       if (zombies[i].ateYou()) {
-        currentLife -= 30 / healthMult;
-        zombies.splice(i, 1);
+        if (zombies[i].state === "no") {
+          currentLife -= 30 / healthMult;
+          zombies[i].removeDisplay();
+          zombies.splice(i, 1);
+        }
       }
 
       if (hasShot(zombies[i])) {
+        // zombies.splice(i, 1); //sdnjkj
+        zombies[i].timeout(5);
+        // coinsNum += 3;
+      }
+    }
+
+    for (let i = zombies.length - 1; i >= 0; i--) {
+      if (
+        zombies[i].state === "eatable" &&
+        dist(
+          zombies[i].pos.x,
+          zombies[i].pos.y,
+          player.position.x,
+          player.position.y
+        ) <
+          20 ===
+          true
+      ) {
+        // console.log("eat now");
+        zombies[i].removeDisplay();
         zombies.splice(i, 1);
-        coinsNum += 3;
+        currentStamina -= 5;
       }
     }
   }
@@ -332,7 +359,7 @@ function draw() {
         genKeys(keysNeeded + 2);
         grassTileCreated = 1;
       }
-      console.log("one time only?");
+      // console.log("one time only?");
       grassTileCreated = 1;
     }
     var randum = Math.round(random(0, 100));
@@ -379,6 +406,8 @@ function gameOver() {
       title: `Game Over!!!`,
       text: "Thanks for playing!!",
       icon: "success",
+      imageUrl: "http://cdn.onlinewebfonts.com/svg/img_491435.png",
+      imageSize: "150x150",
       confirmButtonText: "Play Again?",
     },
     function (isConfirm) {
@@ -394,6 +423,7 @@ function hasShot(zombie) {
     if (
       dist(this.arrowG[i].x, this.arrowG[i].y, zombie.pos.x, zombie.pos.y) < 15
     ) {
+      this.arrowG[i].removeDisplay();
       this.arrowG.splice(i, 1);
       // maxZoms -= 1;
       return true;
@@ -495,10 +525,10 @@ function shop() {
         // gameState = "bossLevel";
         // grassTileCreated = 1;
         gameState = "bossLevel";
-        console.log(gameState);
+        // console.log(gameState);
       } else {
         gameState = "secondLevel";
-        console.log(gameState);
+        // console.log(gameState);
       }
       grassTileGroup.removeSprites();
       brickTileGroup.removeSprites();
@@ -529,7 +559,7 @@ function shop() {
     if (one_key === true && coinsNum >= 20 && fistUnlocked === false) {
       fistUnlocked = true;
       coinsNum -= 20;
-      console.log("fist up");
+      // console.log("fist up");
       one_key = false;
       text(
         "Fist Unlocked!",
@@ -541,21 +571,21 @@ function shop() {
     if (two_key === true && coinsNum >= 50 && gunUnlocked === false) {
       gunUnlocked = true;
       coinsNum -= 50;
-      console.log("gun up");
+      // console.log("gun up");
       two_key = false;
     }
     if (three_key === true && coinsNum >= price) {
       healthMult += 1;
       priceMult += 1;
-      console.log(price);
+      // console.log(price);
       coinsNum -= price;
-      console.log("armour up");
+      // console.log("armour up");
       three_key = false;
     }
 
-    if (four_key === true && totalKeys >= 0) {
+    if (four_key === true && totalKeys >= keysNeeded) {
       //come back here
-      console.log("relic");
+      // console.log("relic");
       relicUnlocked = true;
       totalKeys = 0;
       four_key = false;
@@ -675,7 +705,7 @@ function genKeys(minValKeys) {
     keys.scale = 0.1;
     keysGroup.add(keys);
     randomCounter += 1;
-    console.log(randomCounter);
+    // console.log(randomCounter);
   }
 }
 

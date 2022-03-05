@@ -13,10 +13,11 @@ class Zombie {
     let x = random(-300, width + 300);
     this.pos = createVector(x, y);
     this.zom;
+    this.state = "no";
   }
 
   createZom() {
-    this.zom = createSprite(this.pos.x, this.pos.y, 40, 40);
+    this.zom = createSprite(this.pos.x, this.pos.y);
     this.zom.shapeColor = "#1e522c";
     this.zom.dept = 234890230;
     this.zom.rotation = this.angle;
@@ -56,10 +57,23 @@ class Zombie {
     angle = angle * (180 / 3.14);
     this.zom.rotation = angle;
   }
-
+  //
   ateYou() {
     return (
       dist(this.pos.x, this.pos.y, player.position.x, player.position.y) < 20
     );
+  }
+  async timeout(sec) {
+    this.speed = 0;
+    this.state = "eatable";
+
+    await setTimeout(() => {
+      this.speed = 1;
+      this.state = "no";
+    }, sec * 1000);
+  }
+  removeDisplay() {
+    this.zom.addImage("blank", zombieDead);
+    this.zom.changeImage("blank");
   }
 }

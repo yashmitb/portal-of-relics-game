@@ -28,4 +28,8 @@ class Bullet {
     this.x += this.speed * cos(this.angle);
     this.y += this.speed * sin(this.angle);
   }
+  removeDisplay() {
+    this.bull.addImage("blank", zombieDead);
+    this.bull.changeImage("blank");
+  }
 }
