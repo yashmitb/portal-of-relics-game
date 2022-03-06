@@ -74,7 +74,11 @@ class Form {
   showText() {
     textSize(50);
     textAlign(CENTER);
-    text(this.message, player.position.x, player.position.y - 100);
+    if (this.message === "") {
+      text("Sir", player.position.x, player.position.y - 100);
+    } else {
+      text(this.message, player.position.x, player.position.y - 100);
+    }
     // text(this.message, windowWidth/2, player.position.y);
     // console.log(this.message);
   }

@@ -606,6 +606,7 @@ function shop() {
 function removeBlocks(sprite, coin) {
   coin.remove();
   coinsNum += 2;
+  currentStamina += 4;
   // console.log(coinsNum);
 }
 
@@ -697,8 +698,8 @@ function createTiles(x, y, dept) {
 function genKeys(minValKeys) {
   var randomNum1 = Math.round(random(minValKeys, minValKeys + 2));
   for (var i = 0; i <= randomNum1; i++) {
-    var xR = Math.round(random(-windowWidth, windowWidth * 2));
-    var yR = Math.round(random(-windowHeight, windowHeight * 2));
+    var xR = Math.round(random(-windowWidth, windowWidth * 1.5));
+    var yR = Math.round(random(-windowHeight + 200, windowHeight * 2));
     keys = createSprite(xR, yR, 20, 40);
     keys.rotation = Math.round(random(0, 90));
     keys.shapeColor = "grey";
