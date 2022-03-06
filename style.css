@@ -102,3 +102,7 @@ canvas {
   font-family: vollkorn;
   text-align: center;
 }
+
+canvas {
+  filter: blur(5px);
+}

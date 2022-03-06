@@ -247,6 +247,7 @@ function draw() {
     }
     // armourType.visible = true; ///asdhjaksdjaskldjasjkdjnaskjmdaskjmdhjkajsdhk
     // console.log("asd");
+    canvas.style.filter = "none";
     showLife();
     showStamina();
     background(200);
