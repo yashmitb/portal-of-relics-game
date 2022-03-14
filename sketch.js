@@ -698,8 +698,8 @@ function createTiles(x, y, dept) {
 function genKeys(minValKeys) {
   var randomNum1 = Math.round(random(minValKeys, minValKeys + 2));
   for (var i = 0; i <= randomNum1; i++) {
-    var xR = Math.round(random(-windowWidth, windowWidth * 1.5));
-    var yR = Math.round(random(-windowHeight + 200, windowHeight * 2));
+    var xR = Math.round(random(-windowWidth, windowWidth));
+    var yR = Math.round(random(-windowHeight, windowHeight * 2));
     keys = createSprite(xR, yR, 20, 40);
     keys.rotation = Math.round(random(0, 90));
     keys.shapeColor = "grey";
@@ -797,7 +797,7 @@ function moveplayer() {
 
   // console.log(mouseX);
 
-  if (left_key && player.position.x > -1890) {
+  if (left_key && player.position.x) {
     playerSpeedX -= 0.3;
     currentStamina -= 0.1;
     if (gunUnlocked === true) {
@@ -807,7 +807,7 @@ function moveplayer() {
       player.changeImage("moving");
     }
   }
-  if (right_key && player.position.x < 1830) {
+  if (right_key && player.position.x) {
     playerSpeedX += 0.3;
     currentStamina -= 0.1;
     // player.changeImage("moving");
@@ -817,7 +817,7 @@ function moveplayer() {
       player.changeImage("moving");
     }
   }
-  if (up_key && player.position.y > 90) {
+  if (up_key) {
     playerSpeedY -= 0.3;
     currentStamina -= 0.1;
     // player.changeImage("moving");
@@ -827,7 +827,7 @@ function moveplayer() {
       player.changeImage("moving");
     }
   }
-  if (down_key && player.position.y < 3810) {
+  if (down_key) {
     playerSpeedY += 0.3;
     currentStamina -= 0.1;
     // player.changeImage("moving");
